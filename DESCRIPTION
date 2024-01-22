@@ -1,12 +1,14 @@
-Package: MMA
-Title: What the Package Does (One Line, Title Case)
+Package: ModelMediation
+Title: Perform model-based mediation analysis using a wide range of model types
 Version: 0.0.0.9000
 Authors@R: 
-    person("First", "Last", , "first.last@example.com", role = c("aut", "cre"),
-           comment = c(ORCID = "YOUR-ORCID-ID"))
-Description: What the package does (one paragraph).
-License: `use_mit_license()`, `use_gpl3_license()` or friends to pick a
-    license
+    person("William", "Ruth", , "william.ruth@umontreal.ca", role = c("aut", "cre"),
+           comment = c(ORCID = "0000-0002-4975-1572"))
+Description: Perform model-based mediation analysis. Facilitates binary or continuous response and mediator, single or multiple levels and the option to include confounding variables.
+License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.3
+Suggests: 
+    testthat (>= 3.0.0)
+Config/testthat/edition: 3

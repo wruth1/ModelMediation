@@ -1,7 +1,7 @@
 
 K=3
 N=20
-data = build_valid_fixed_covs(K, N)
+data = build_valid_deterministic_covs(K, N)
 
 test_that("Number of groups is correct",{
   expect_length(data, K)

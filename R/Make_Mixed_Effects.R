@@ -91,14 +91,14 @@ make_MEs <- function(fix_effs, ran_effs_by_K, mix_eff_ind_pairs){
   # Remove random effects with corresponding fixed effect ----
 
   ## Get indices of random effects to remove ----
-  ## This is a concise way of extracting the second component of each element in mix_eff_ind_pairs
-  ME_inds_in_REs = sapply(mix_eff_ind_pairs, `[`, i=2)
+  ## I.e. The random effect indices which show up in mix_eff_ind_pairs
+  ME_inds_in_REs = get_index_vec(mix_eff_ind_pairs, i=2)
 
   ## Construct list of vectors containing random-only effects ----
   K = length(ran_effs_by_K)
   ran_only_effs_by_K = ran_effs_by_K
   for(k in 1:K){
-    ran_only_effs_by_K[[k]] = ran_effs_by_K[[k]][-ME_inds_in_REs]
+    ran_only_effs_by_K[[k]] = delete_at(ran_effs_by_K[[k]], ME_inds_in_REs)
   }
 
 

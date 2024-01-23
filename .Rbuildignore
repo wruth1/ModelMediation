@@ -1,3 +1,5 @@
 ^ModelMediation\.Rproj$
 ^\.Rproj\.user$
 ^LICENSE\.md$
+^README\.Rmd$
+^R/Package_Workflow.R

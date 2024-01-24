@@ -9,6 +9,27 @@
 The goal of ModelMediation is to facilitate estimation and uncertainty
 quantification for mediation effects in model based mediation analysis.
 
+Here is an outline of what is left to do:
+
+- Build validation dataset
+  - Generate data in a way that can be recycled for parametric bootstrap
+- Run bootstrap
+  - Parametric bootstrap
+  - Non-parametric bootstrap
+- Construct CIs from bootstrap output
+  - Decide on standard output for previous step
+  - Percentile
+  - Basic
+  - ~~Wald (parametric only)~~ (see note below)
+  - Bias Corrected?
+
+For now, I’m going to omit the Wald interval. I think it will be better
+to keep parametric and non-parametric as similar as possible and
+introduce any differences later.
+
+Important Note: The issues I’ve had with incompatible country order
+should be fixed if I sort the data by country before doing any analysis.
+
 ## Installation
 
 You can install the development version of ModelMediation from

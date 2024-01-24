@@ -1,5 +1,31 @@
 
 
+#' Generate a dataset for validating methodology
+#'
+#' Generate a validation dataset with `n` observations in each of `K` groups. Variables include one outcome (Y), one exposure (X), one mediator (M) and two confounders (C1 and C2). All variables are binary.
+#'
+#' @param n Number of observations in each group.
+#' @param K Number of groups
+#' @param output_list Should output be formatted as a list with one component per group (of size n-by-5) or a single tibble of size (Kn)-by-6 with a column labelled `group`?
+#'
+#' @return A simulated dataset.
+#' @export
+#'
+#' @examples
+#' n = 20
+#' K = 3
+#'
+#' # Format output as a list
+#' make_validation_data(n, K, output_list = TRUE)
+#'
+#' # Format output as a tibble
+#' make_validation_data(n, K, output_list = FALSE)
+make_validation_data <- function(n, K, output_list = TRUE){
+  return(0)
+}
+
+
+
 #' Generate non-random covariates for validation dataset (i.e. intercept, X and C)
 #'
 #' @param K Number of groups

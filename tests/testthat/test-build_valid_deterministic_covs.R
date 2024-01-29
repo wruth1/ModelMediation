@@ -15,7 +15,7 @@ test_that("Correct number of obs in each group",{
 
 
 test_that("Same number of obs in each group",{
-  all_lengths = sapply(data, nrow)
+  all_lengths = purrr::map_int(data, nrow)
 
   expect_equal(var(all_lengths), 0)
 })

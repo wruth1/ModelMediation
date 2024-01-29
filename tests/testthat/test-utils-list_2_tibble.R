@@ -79,7 +79,7 @@ test_that("Group labels column has correct number of each type of label",{
   labels = X_tibble["group"]
   label_counts = as.numeric(table(labels))
 
-  group_sizes = sapply(some_matrices, nrow)
+  group_sizes = purrr::map_int(some_matrices, nrow)
 
   expect_equal(label_counts, group_sizes)
 })

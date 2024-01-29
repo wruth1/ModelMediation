@@ -14,7 +14,7 @@ test_that("Dimensions of random effects are correct",{
 
   expect_equal(length(all_REs[[1]]), q)
 
-  all_lengths = sapply(all_REs, length)
+  all_lengths = purrr::map_int(all_REs, length)
   expect_equal(var(all_lengths), 0)
 })
 

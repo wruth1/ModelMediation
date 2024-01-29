@@ -28,6 +28,9 @@ make_validation_data <- function(n, K, all_reg_pars = NULL, output_list = TRUE){
   # Generate data as a list
   data_list = make_validation_data_list(n, K, all_reg_pars)
 
+  # Placeholder
+  return(0)
+
   # Optionally, stack groups into a single tibble
   if(!output_list){
     data_tibble = list_2_tibble(data_list)
@@ -37,6 +40,28 @@ make_validation_data <- function(n, K, all_reg_pars = NULL, output_list = TRUE){
   }
 }
 
+
+make_validation_data_list <- function(n, K, all_reg_pars){
+  return(0)
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# Helper Functions ----
 
 
 #' Store all regression parameters in a single list
@@ -72,6 +97,9 @@ make_all_reg_pars <- function(beta_Y = rep(1, times=4), Gamma_Y = matrix(rep(1, 
 #' N=10
 #' build_valid_deterministic_covs(K, N)
 build_valid_deterministic_covs <- function(K, N){
+
+  #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  # If I decide to use this, replace lapply with a suitable form of purrr::map
   preds_by_K = lapply(1:K, function(x){
     this_Xs = stats::rbinom(N, 1, 0.5)
     this_Cs = stats::rbinom(N, 1, 0.5)
@@ -154,8 +182,8 @@ u_by_K = list(c(1,1), c(2,2), c(3,3))
 get_lin_preds <- function(data_by_K, beta, u_by_K){
   K = length(data_by_K)
 
-  X_by_K = get_index_list(data_by_K, 1)
-  Z_by_K = get_index_list(data_by_K, 2)
+  X_by_K = purrr::map(data_by_K, 1)
+  Z_by_K = purrr::map(data_by_K, 2)
 
   fixed_contrib_by_K = purrr::map(X_by_K, function(X) X %*% beta)
   random_contrib_by_K = purrr::map2(Z_by_K, u_by_K, \(x, y) x %*% y)

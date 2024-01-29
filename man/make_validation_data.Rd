@@ -4,12 +4,14 @@
 \alias{make_validation_data}
 \title{Generate a dataset for validating methodology}
 \usage{
-make_validation_data(n, K, output_list = TRUE)
+make_validation_data(n, K, all_reg_pars = NULL, output_list = TRUE)
 }
 \arguments{
 \item{n}{Number of observations in each group.}
 
 \item{K}{Number of groups}
+
+\item{all_reg_pars}{A named list containing fixed and mixed effects parameters for both regression models. Best obtained from \code{make_all_reg_pars()}.}
 
 \item{output_list}{Should output be formatted as a list with one component per group (of size n-by-5) or a single tibble of size (Kn)-by-6 with a column labelled \code{group}?}
 }
@@ -17,15 +19,16 @@ make_validation_data(n, K, output_list = TRUE)
 A simulated dataset.
 }
 \description{
-Generate a validation dataset with \code{n} observations in each of \code{K} groups. Variables include one outcome (Y), one exposure (X), one mediator (M) and two confounders (C1 and C2). All variables are binary.
+Generate a validation dataset with \code{n} observations in each of \code{K} groups. Variables include one outcome (Y), one exposure (X), one mediator (M) and two confounders (C1 and C2). All variables are binary. Default values are provided for regression parameters (fixed effects and covariances of random effects).
 }
 \examples{
 n = 20
 K = 3
+all_reg_pars = make_all_reg_pars()
 
 # Format output as a list
-make_validation_data(n, K, output_list = TRUE)
+make_validation_data(n, K, all_reg_pars, output_list = TRUE)
 
 # Format output as a tibble
-make_validation_data(n, K, output_list = FALSE)
+make_validation_data(n, K, all_reg_pars, output_list = FALSE)
 }

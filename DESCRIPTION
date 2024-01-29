@@ -17,5 +17,6 @@ BugReports: https://github.com/wruth1/ModelMediation/issues
 Imports: 
     lme4,
     purrr,
+    rlang,
     stats,
     tibble

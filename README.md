@@ -20,7 +20,8 @@ Here is an outline of what is left to do:
   - Decide on standard output for previous step
   - Percentile
   - Basic
-  - ~~Wald (parametric only)~~ (see note below)
+  - ~~Wald (parametric only)~~ (see note
+    below)<!-- ~~ indicates strikethrough. This is a markdown comment -->
   - Bias Corrected?
 
 For now, I’m going to omit the Wald interval. I think it will be better

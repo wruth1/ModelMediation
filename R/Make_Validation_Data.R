@@ -2,10 +2,11 @@
 
 #' Generate a dataset for validating methodology
 #'
-#' Generate a validation dataset with `n` observations in each of `K` groups. Variables include one outcome (Y), one exposure (X), one mediator (M) and two confounders (C1 and C2). All variables are binary.
+#' Generate a validation dataset with `n` observations in each of `K` groups. Variables include one outcome (Y), one exposure (X), one mediator (M) and two confounders (C1 and C2). All variables are binary. Default values are provided for regression parameters (fixed effects and covariances of random effects).
 #'
 #' @param n Number of observations in each group.
 #' @param K Number of groups
+#' @param all_reg_pars A named list containing fixed and mixed effects parameters for both regression models. Best obtained from `make_all_reg_pars()`.
 #' @param output_list Should output be formatted as a list with one component per group (of size n-by-5) or a single tibble of size (Kn)-by-6 with a column labelled `group`?
 #'
 #' @return A simulated dataset.
@@ -14,15 +15,47 @@
 #' @examples
 #' n = 20
 #' K = 3
+#' all_reg_pars = make_all_reg_pars()
 #'
 #' # Format output as a list
-#' make_validation_data(n, K, output_list = TRUE)
+#' make_validation_data(n, K, all_reg_pars, output_list = TRUE)
 #'
 #' # Format output as a tibble
-#' make_validation_data(n, K, output_list = FALSE)
-make_validation_data <- function(n, K, output_list = TRUE){
-  return(0)
+#' make_validation_data(n, K, all_reg_pars, output_list = FALSE)
+make_validation_data <- function(n, K, all_reg_pars = NULL, output_list = TRUE){
+  if(is.null(all_reg_pars)) all_reg_pars = make_all_reg_pars()
+
+  # Generate data as a list
+  data_list = make_validation_data_list(n, K, all_reg_pars)
+
+  # Optionally, stack groups into a single tibble
+  if(!output_list){
+    data_tibble = list_2_tibble(data_list)
+    return(data_tibble)
+  } else{
+    return(data_list)
+  }
 }
+
+
+
+#' Store all regression parameters in a single list
+#'
+#' @param beta_Y Vector of length 4 containing fixed-effects for the outcome model. Order of variables is: Intercept, X, M, C.
+#' @param Gamma_Y Covariance matrix of size 3x3 containing random effects for the outcome model. Order of variables is: Intercept, X, M.
+#' @param beta_M Vector of length 3 containing fixed-effects for the outcome model. Order is: Intercept, X, C.
+#' @param Gamma_M Covariance matrix of size 2x2 containing random effects for the outcome model. Order of variables is: Intercept, X.
+#'
+#' @return A named list containing fixed and random effects parameters for both the outcome and mediator regression models. Names in list match names of arguments to this function.
+#' @export
+#'
+#' @examples
+#' make_all_reg_pars()
+make_all_reg_pars <- function(beta_Y = rep(1, times=4), Gamma_Y = matrix(rep(1, times=9), nrow = 3), beta_M = rep(1, times = 3), Gamma_M = matrix(rep(1, times=4), nrow = 2)){
+  list(beta_Y = beta_Y, Gamma_Y = Gamma_Y, beta_M = beta_M, Gamma_M = Gamma_M)
+}
+
+
 
 
 

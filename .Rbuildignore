@@ -3,3 +3,4 @@
 ^LICENSE\.md$
 ^README\.Rmd$
 ^R/Package_Workflow.R
+^\.github$

@@ -25,6 +25,8 @@ some_info <- function() {
 
 
 
+
+
   # File navigation ----
   # Note: Functions must be defined in .R files inside the R directory, WITHOUT ANY SUB-DIRECTORIES
 
@@ -81,6 +83,10 @@ some_info <- function() {
 
   ## Run devtools tests plus my unit tests ----
   check()
+
+  ## Check test coverage ----
+  ## Note: Only runs if package has not been loaded, e.g. with load_all()
+  covr::report()
 
 
 

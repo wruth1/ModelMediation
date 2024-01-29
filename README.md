@@ -4,6 +4,8 @@
 # ModelMediation
 
 <!-- badges: start -->
+
+[![R-CMD-check](https://github.com/wruth1/ModelMediation/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/wruth1/ModelMediation/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
 The goal of ModelMediation is to facilitate estimation and uncertainty

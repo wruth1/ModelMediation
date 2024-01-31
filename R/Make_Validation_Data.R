@@ -80,17 +80,10 @@ make_M_validation <- function(X, all_Cs, all_reg_pars){
   data_ran = data.frame(X = X)
 
 
-<<<<<<< HEAD
-  lin_preds = get_lin_preds(data_fix, data_ran, 1*beta_M, Gamma_M, add_intercept = TRUE)
+  lin_preds = get_lin_preds(data_fix, data_ran, beta_M, Gamma_M, add_intercept = TRUE)
   all_probs = boot::inv.logit(lin_preds)
 
   M = stats::rbinom(n, 1, all_probs)
-=======
-  lin_preds = get_lin_preds(data_fix, data_ran, 0.05*beta_M, Gamma_M, add_intercept = TRUE)
-  all_probs = boot::inv.logit(lin_preds)
-
-  M = rbinom(n, 1, all_probs)
->>>>>>> 212b18ba2b98b8ae401b92efd166ce624b31d186
   return(M)
 }
 

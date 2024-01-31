@@ -5,18 +5,18 @@
 \title{Store all regression parameters in a single list}
 \usage{
 make_all_reg_pars(
-  beta_Y = rep(1, times = 4),
-  Gamma_Y = matrix(rep(1, times = 9), nrow = 3),
-  beta_M = rep(1, times = 3),
-  Gamma_M = matrix(rep(1, times = 4), nrow = 2)
+  beta_Y = 0.2 * c(1, -1, 1, -1, 1),
+  Gamma_Y = 0.25 * diag(3),
+  beta_M = 0.3 * c(-1, 1, -1, 1),
+  Gamma_M = 0.25 * diag(2)
 )
 }
 \arguments{
-\item{beta_Y}{Vector of length 4 containing fixed-effects for the outcome model. Order of variables is: Intercept, X, M, C.}
+\item{beta_Y}{Vector of length 4 containing fixed-effects for the outcome model. Order of variables is: Intercept, X, M, C1, C2.}
 
 \item{Gamma_Y}{Covariance matrix of size 3x3 containing random effects for the outcome model. Order of variables is: Intercept, X, M.}
 
-\item{beta_M}{Vector of length 3 containing fixed-effects for the outcome model. Order is: Intercept, X, C.}
+\item{beta_M}{Vector of length 3 containing fixed-effects for the outcome model. Order is: Intercept, X, C1, C2.}
 
 \item{Gamma_M}{Covariance matrix of size 2x2 containing random effects for the outcome model. Order of variables is: Intercept, X.}
 }

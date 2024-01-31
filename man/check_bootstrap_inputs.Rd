@@ -27,7 +27,7 @@ check_bootstrap_inputs(
 Check whether enough information has been provided to fit the requested flavour of bootstrap
 }
 \examples{
-data = make_validation_data()
+data = 0
 mod_Y = fit_mod_Y(data)
 mod_M = fit_mod_M(data)
 

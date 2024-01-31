@@ -31,7 +31,7 @@ make_validation_data <- function(n, K, all_reg_pars = NULL, output_list = TRUE){
 
   # Optionally, stack groups into a single tibble
   if(!output_list){
-    data_tibble = list_2_tibble(data_list)
+    data_tibble = list_2_data(data_list)
     return(data_tibble)
   } else{
     return(data_list)
@@ -56,12 +56,12 @@ make_one_group_validation <- function(n, all_reg_pars){
 }
 
 make_X_validation <- function(n){
-  return(rbinom(n, 1, 0.5))
+  return(stats::rbinom(n, 1, 0.5))
 }
 
 make_C_validation <- function(n){
-  C1 = rbinom(n, 1, 0.5)
-  C2 = rbinom(n, 1, 0.5)
+  C1 = stats::rbinom(n, 1, 0.5)
+  C2 = stats::rbinom(n, 1, 0.5)
 
   return(tibble::tibble(C1 = C1, C2 = C2))
 }
@@ -70,14 +70,14 @@ make_C_validation <- function(n){
 make_M_validation <- function(X, C, all_reg_pars){
   n = length(X)
   if(nrow(C) != n) stop("In make_M_validation: X and C must have same number of rows.")
-  return(rbinom(n, 1, 0.5))
+  return(stats::rbinom(n, 1, 0.5))
 }
 
 #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! Placeholder
 make_Y_validation <- function(M, X, C, all_reg_pars){
   n = length(M)
   if((length(X) != n) || (nrow(C) != n)) stop("In make_Y_validation: M, X and C must have same number of rows.")
-  return(rbinom(n, 1, 0.5))
+  return(stats::rbinom(n, 1, 0.5))
 }
 
 

@@ -37,7 +37,7 @@ Run a complete bootstrap analysis with \code{B} bootstrap samples
 }
 \examples{
 B = 5
-data = make_validation_data()
+data = 0
 mod_Y = fit_mod_Y(data)
 mod_M = fit_mod_M(data)
 

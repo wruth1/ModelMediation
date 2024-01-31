@@ -15,7 +15,7 @@
 #'
 #' @examples
 #' B = 5
-#' data = make_validation_data()
+#' data = 0
 #' mod_Y = fit_mod_Y(data)
 #' mod_M = fit_mod_M(data)
 #'
@@ -65,7 +65,7 @@ run_bootstrap <- function(B, data = NULL, mod_Y = NULL, mod_M = NULL, parametric
 #' @export
 #'
 #' @examples
-#' data = make_validation_data()
+#' data = 0
 #' mod_Y = fit_mod_Y(data)
 #' mod_M = fit_mod_M(data)
 #'
@@ -97,7 +97,7 @@ one_bootstrap <- function(data = NULL, mod_Y = NULL, mod_M = NULL, parametric = 
 #' @export
 #'
 #' @examples
-#' data = make_validation_data()
+#' data = 0
 #' mod_Y = fit_mod_Y(data)
 #' mod_M = fit_mod_M(data)
 #'
@@ -140,7 +140,7 @@ one_bootstrap_sample <- function(data = NULL, mod_Y = NULL, mod_M = NULL, parame
 #' @export
 #'
 #' @examples
-#' data = make_validation_data()
+#' data = 0
 #' mod_Y = fit_mod_Y(data)
 #' mod_M = fit_mod_M(data)
 #'

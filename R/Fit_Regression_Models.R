@@ -17,7 +17,6 @@
 #' @export
 #'
 #' @examples
-#' # data = make_validation_data()
 #' data = 0
 #' fit_mod_Y(data)
 fit_mod_Y <- function(data){
@@ -35,7 +34,6 @@ fit_mod_Y <- function(data){
 #' @export
 #'
 #' @examples
-#' # data = make_validation_data()
 #' data = 0
 #' fit_mod_M(data)
 fit_mod_M <- function(data){

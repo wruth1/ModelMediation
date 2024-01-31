@@ -16,7 +16,6 @@ A GLMM fit using \code{glmer} from the \code{lme4} package.
 Fit a regression model to the observed data with mediator as response variable
 }
 \examples{
-# data = make_validation_data()
 data = 0
 fit_mod_M(data)
 }

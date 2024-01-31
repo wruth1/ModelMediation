@@ -30,7 +30,7 @@ A single bootstrap sample, formatted as a tibble.
 Generate a single bootstrap sample
 }
 \examples{
-data = make_validation_data()
+data = 0
 mod_Y = fit_mod_Y(data)
 mod_M = fit_mod_M(data)
 

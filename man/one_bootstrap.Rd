@@ -30,7 +30,7 @@ One component of standard bootstrap output.
 Perform a single bootstrap analysis
 }
 \examples{
-data = make_validation_data()
+data = 0
 mod_Y = fit_mod_Y(data)
 mod_M = fit_mod_M(data)
 

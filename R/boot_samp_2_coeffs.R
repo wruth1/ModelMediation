@@ -38,8 +38,8 @@ fix_coeffs_for_mediation <- function(mod_Y, mod_M){
 # Mixed coefficients (i.e. group-level) ----
 
 mix_coeffs_for_mediation <- function(mod_Y, mod_M){
-  mix_coeffs_Y = coefficients(mod_Y)[[1]]
-  mix_coeffs_M = coefficients(mod_M)[[1]]
+  mix_coeffs_Y = stats::coefficients(mod_Y)[[1]]
+  mix_coeffs_M = stats::coefficients(mod_M)[[1]]
 
   mix_coeffs_2_data(mix_coeffs_Y, mix_coeffs_M)
 }
@@ -55,23 +55,3 @@ mix_coeffs_2_data <- function(mix_coeffs_Y, mix_coeffs_M){
 
   return(output)
 }
-
-#
-#
-#
-#
-# reg_coeffs_for_mediation <- function(mod_Y, mod_M){
-#   X_in_Y = get_X_coeff(mod_Y)
-#   M_in_Y = get_M_coeff(mod_Y)
-#   X_in_M = get_X_coeff(mod_M)
-#
-#   output = c(X_in_Y, M_in_Y, X_in_M)
-#   names(output) = c("X_in_Y", "M_in_Y", "X_in_M")
-#
-#   return(output)
-# }
-#
-#
-# get_X_coeff <- function(reg_model){
-#
-# }

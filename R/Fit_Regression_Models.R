@@ -17,10 +17,14 @@
 #' @export
 #'
 #' @examples
-#' data = 0
+#' n = 20
+#' K = 3
+#' all_reg_pars = make_all_reg_pars()
+#' data = make_validation_data(n, K, all_reg_pars)
+#'
 #' fit_mod_Y(data)
 fit_mod_Y <- function(data){
-  return(0)
+  lme4::glmer(Y ~ M + X + C1 + C2 + (M + X | group), data = data, family = "binomial")
 }
 
 
@@ -34,8 +38,12 @@ fit_mod_Y <- function(data){
 #' @export
 #'
 #' @examples
-#' data = 0
+#' n = 20
+#' K = 3
+#' all_reg_pars = make_all_reg_pars()
+#' data = make_validation_data(n, K, all_reg_pars)
+#'
 #' fit_mod_M(data)
 fit_mod_M <- function(data){
-  return(0)
+  lme4::glmer(M ~ X + C1 + C2 + (X | group), data = data, family = "binomial")
 }

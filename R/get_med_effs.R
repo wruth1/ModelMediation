@@ -29,7 +29,7 @@ get_med_effs <- function(X_in_Y, M_in_Y, X_in_M, Y_binary=TRUE, M_binary=TRUE){
 #' @param M_in_Y Coefficient of M in the regression model for Y.
 #' @param X_in_M Coefficient of X in the regression model for M.
 #'
-#' @return A vector of mediation effects on odds-ratio scale. Order is direct effect, indirect effect, total effect.
+#' @return A (named) vector of mediation effects on odds-ratio scale. Order is direct effect, indirect effect, total effect.
 #' @export
 #'
 #' @examples

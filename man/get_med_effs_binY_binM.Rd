@@ -14,7 +14,7 @@ get_med_effs_binY_binM(X_in_Y, M_in_Y, X_in_M)
 \item{X_in_M}{Coefficient of X in the regression model for M.}
 }
 \value{
-A vector of mediation effects on odds-ratio scale. Order is direct effect, indirect effect, total effect.
+A (named) vector of mediation effects on odds-ratio scale. Order is direct effect, indirect effect, total effect.
 }
 \description{
 Compute mediation effects with binary response and binary mediator

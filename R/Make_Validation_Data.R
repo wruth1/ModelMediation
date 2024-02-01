@@ -22,7 +22,7 @@
 #'
 #' # Format output as a data.frame
 #' make_validation_data(n, K, all_reg_pars, output_list = FALSE)
-make_validation_data <- function(n, K, all_reg_pars = NULL, output_list = TRUE){
+make_validation_data <- function(n, K, all_reg_pars = NULL, output_list = FALSE){
   if(is.null(all_reg_pars)) all_reg_pars = make_all_reg_pars()
 
   # Generate data as a list

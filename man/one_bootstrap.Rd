@@ -30,11 +30,15 @@ One component of standard bootstrap output.
 Perform a single bootstrap analysis
 }
 \examples{
-data = 0
+n = 20
+K = 3
+all_reg_pars = make_all_reg_pars()
+data = make_validation_data(n, K, all_reg_pars)
+
 mod_Y = fit_mod_Y(data)
 mod_M = fit_mod_M(data)
 
-one_bootstrap(mod_Y = mod_Y, mod_M = mod_M, parametric = TRUE, .careful = TRUE)
+\dontrun{one_bootstrap(mod_Y = mod_Y, mod_M = mod_M, parametric = TRUE, .careful = TRUE)}
 
 one_bootstrap(data = data, parametric = FALSE, .careful = TRUE)
 }

@@ -16,6 +16,9 @@ URL: https://github.com/wruth1/ModelMediation
 BugReports: https://github.com/wruth1/ModelMediation/issues
 Imports: 
     boot,
+    dplyr,
+    lme4,
+    magrittr,
     MASS,
     purrr,
     stats

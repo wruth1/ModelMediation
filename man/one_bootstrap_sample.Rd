@@ -30,7 +30,11 @@ A single bootstrap sample, formatted as a data.frame.
 Generate a single bootstrap sample
 }
 \examples{
-data = 0
+n = 20
+K = 3
+all_reg_pars = make_all_reg_pars()
+data = make_validation_data(n, K, all_reg_pars)
+
 mod_Y = fit_mod_Y(data)
 mod_M = fit_mod_M(data)
 

@@ -15,7 +15,11 @@
 #'
 #' @examples
 #' B = 5
-#' data = 0
+#' n = 20
+#' K = 3
+#' all_reg_pars = make_all_reg_pars()
+#' data = make_validation_data(n, K, all_reg_pars)
+#'
 #' mod_Y = fit_mod_Y(data)
 #' mod_M = fit_mod_M(data)
 #'
@@ -46,7 +50,7 @@ run_bootstrap <- function(B, data = NULL, mod_Y = NULL, mod_M = NULL, parametric
   }
 
   # Format output into standard format for CIs
-  output = 0
+  output = data.frame(X_in_Y = c(1,1), M_in_Y = c(2,2), X_in_M = c(3,3), B = 1:2, group = c("fixed", "1"))
 
   return(output)
 }
@@ -65,11 +69,15 @@ run_bootstrap <- function(B, data = NULL, mod_Y = NULL, mod_M = NULL, parametric
 #' @export
 #'
 #' @examples
-#' data = 0
+#' n = 20
+#' K = 3
+#' all_reg_pars = make_all_reg_pars()
+#' data = make_validation_data(n, K, all_reg_pars)
+#'
 #' mod_Y = fit_mod_Y(data)
 #' mod_M = fit_mod_M(data)
 #'
-#' one_bootstrap(mod_Y = mod_Y, mod_M = mod_M, parametric = TRUE, .careful = TRUE)
+#' \dontrun{one_bootstrap(mod_Y = mod_Y, mod_M = mod_M, parametric = TRUE, .careful = TRUE)}
 #'
 #' one_bootstrap(data = data, parametric = FALSE, .careful = TRUE)
 one_bootstrap <- function(data = NULL, mod_Y = NULL, mod_M = NULL, parametric = TRUE, .careful = TRUE){
@@ -97,7 +105,11 @@ one_bootstrap <- function(data = NULL, mod_Y = NULL, mod_M = NULL, parametric = 
 #' @export
 #'
 #' @examples
-#' data = 0
+#' n = 20
+#' K = 3
+#' all_reg_pars = make_all_reg_pars()
+#' data = make_validation_data(n, K, all_reg_pars)
+#'
 #' mod_Y = fit_mod_Y(data)
 #' mod_M = fit_mod_M(data)
 #'
@@ -124,7 +136,8 @@ one_bootstrap_sample <- function(data = NULL, mod_Y = NULL, mod_M = NULL, parame
     boot_data = one_non_parametric_sample(data)
   }
 
-
+  #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! Placeholder
+  boot_data = data
 
   return(boot_data)
 }
@@ -140,7 +153,11 @@ one_bootstrap_sample <- function(data = NULL, mod_Y = NULL, mod_M = NULL, parame
 #' @export
 #'
 #' @examples
-#' data = 0
+#' n = 20
+#' K = 3
+#' all_reg_pars = make_all_reg_pars()
+#' data = make_validation_data(n, K, all_reg_pars)
+#'
 #' mod_Y = fit_mod_Y(data)
 #' mod_M = fit_mod_M(data)
 #'

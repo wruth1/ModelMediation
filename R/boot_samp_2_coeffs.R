@@ -11,13 +11,49 @@ boot_samp_2_coeffs <- function(boot_data){
 }
 
 reg_coeffs_for_mediation <- function(mod_Y, mod_M){
-  # fix_coeffs = fix_coefs_for_mediation(mod_Y, mod_M)
-  #
-  # mix_coefs = mix_coefs_for_mediation(mod_Y, mod_M)
-  #
-  # output = combine_fix_mix_coefs(fix_coefs, mix_coefs)
-  # return(output)
-  return(0)
+  fix_coeffs = fix_coeffs_for_mediation(mod_Y, mod_M)
+
+  mix_coeffs = mix_coeffs_for_mediation(mod_Y, mod_M)
+
+  all_coeffs = rbind(fix_coeffs, mix_coeffs)
+  return(all_coeffs)
+}
+
+
+# Fixed coefficients ----
+fix_coeffs_for_mediation <- function(mod_Y, mod_M){
+  fix_coeffs_Y = lme4::fixef(mod_Y)
+  fix_coeffs_M = lme4::fixef(mod_M)
+
+  output = data.frame(X_in_Y = fix_coeffs_Y["X"],
+                      M_in_Y = fix_coeffs_Y["M"],
+                      X_in_M = fix_coeffs_M["X"],
+                      group = "fixed")
+  rownames(output) = NULL
+  return(output)
+}
+
+
+
+# Mixed coefficients (i.e. group-level) ----
+
+mix_coeffs_for_mediation <- function(mod_Y, mod_M){
+  mix_coeffs_Y = coefficients(mod_Y)[[1]]
+  mix_coeffs_M = coefficients(mod_M)[[1]]
+
+  mix_coeffs_2_data(mix_coeffs_Y, mix_coeffs_M)
+}
+
+mix_coeffs_2_data <- function(mix_coeffs_Y, mix_coeffs_M){
+  all_mix_coeffs = cbind(Y=mix_coeffs_Y, M=mix_coeffs_M)
+  all_mix_coeffs$group = rownames(all_mix_coeffs)
+
+  output = all_mix_coeffs %>%
+    dplyr::select(Y.M, Y.X, M.X, group) %>%
+    dplyr::rename(X_in_Y = "Y.X", M_in_Y = "Y.M", X_in_M = "M.X")
+  rownames(output) = NULL
+
+  return(output)
 }
 
 #

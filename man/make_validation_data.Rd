@@ -4,7 +4,7 @@
 \alias{make_validation_data}
 \title{Generate a dataset for validating methodology}
 \usage{
-make_validation_data(n, K, all_reg_pars = NULL, output_list = TRUE)
+make_validation_data(n, K, all_reg_pars = NULL, output_list = FALSE)
 }
 \arguments{
 \item{n}{Number of observations in each group.}

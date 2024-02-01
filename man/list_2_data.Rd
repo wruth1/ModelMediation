@@ -7,7 +7,7 @@
 list_2_data(X_list, group_labels = NULL)
 }
 \arguments{
-\item{X_list}{A list of data frame-like objects (e.g. data frames, tibbles). Must all have the same number of columns.}
+\item{X_list}{A list of data frames. Must all have the same number of columns.}
 
 \item{group_labels}{Optionally, a vector of labels for each element of \code{X_list}. Must be either the same length as \code{X_list} or equal to the total number of rows among elements in \code{X_list}. If \code{NULL}, labels are \code{G1}, \code{G2},...}
 }

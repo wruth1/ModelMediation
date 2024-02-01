@@ -24,7 +24,7 @@ one_bootstrap_sample(
 \item{.careful}{Should input be checked for whether enough information has been provided for the requested flavour of bootstrap? Recommended setting is \code{TRUE} if running interactively and \code{FALSE} if running inside another function which has already checked.}
 }
 \value{
-A single bootstrap sample, formatted as a tibble.
+A single bootstrap sample, formatted as a data.frame.
 }
 \description{
 Generate a single bootstrap sample

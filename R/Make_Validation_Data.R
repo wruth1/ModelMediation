@@ -7,7 +7,7 @@
 #' @param n Number of observations in each group.
 #' @param K Number of groups
 #' @param all_reg_pars A named list containing fixed and mixed effects parameters for both regression models. Best obtained from `make_all_reg_pars()`.
-#' @param output_list Should output be formatted as a list with one component per group (of size n-by-5) or a single tibble of size (Kn)-by-6 with a column labelled `group`?
+#' @param output_list Should output be formatted as a list with one component per group (of size n-by-5) or a single data.frame of size (Kn)-by-6 with a column labelled `group`?
 #'
 #' @return A simulated dataset.
 #' @export
@@ -20,7 +20,7 @@
 #' # Format output as a list
 #' make_validation_data(n, K, all_reg_pars, output_list = TRUE)
 #'
-#' # Format output as a tibble
+#' # Format output as a data.frame
 #' make_validation_data(n, K, all_reg_pars, output_list = FALSE)
 make_validation_data <- function(n, K, all_reg_pars = NULL, output_list = TRUE){
   if(is.null(all_reg_pars)) all_reg_pars = make_all_reg_pars()
@@ -29,10 +29,10 @@ make_validation_data <- function(n, K, all_reg_pars = NULL, output_list = TRUE){
   data_list = make_validation_data_list(n, K, all_reg_pars)
 
 
-  # Optionally, stack groups into a single tibble
+  # Optionally, stack groups into a single data.frame
   if(!output_list){
-    data_tibble = list_2_data(data_list)
-    return(data_tibble)
+    data_stack = list_2_data(data_list)
+    return(data_stack)
   } else{
     return(data_list)
   }
@@ -51,7 +51,7 @@ make_one_group_validation <- function(n, all_reg_pars){
   M = make_M_validation(X, all_Cs, all_reg_pars)
   Y = make_Y_validation(M, X, all_Cs, all_reg_pars)
 
-  output = tibble::tibble(Y=Y, M=M, X=X, all_Cs)
+  output = data.frame(Y=Y, M=M, X=X, all_Cs)
   return(output)
 }
 
@@ -63,7 +63,7 @@ make_C_validation <- function(n){
   C1 = stats::rbinom(n, 1, 0.5)
   C2 = stats::rbinom(n, 1, 0.5)
 
-  return(tibble::tibble(C1 = C1, C2 = C2))
+  return(data.frame(C1 = C1, C2 = C2))
 }
 
 
@@ -87,10 +87,22 @@ make_M_validation <- function(X, all_Cs, all_reg_pars){
   return(M)
 }
 
-#!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! Placeholder
-make_Y_validation <- function(M, X, C, all_reg_pars){
+make_Y_validation <- function(M, X, all_Cs, all_reg_pars){
+  beta_Y = all_reg_pars$beta_Y    # Coefficient vector for fixed effects
+  Gamma_Y = all_reg_pars$Gamma_Y  # Covariance matrix of random effects
+
   n = length(M)
-  if((length(X) != n) || (nrow(C) != n)) stop("In make_Y_validation: M, X and C must have same number of rows.")
+  if((length(X) != n) || (nrow(all_Cs) != n)) stop("In make_Y_validation: M, X and all_Cs must have same number of rows.")
+
+  # Organize M, X and all_Cs into datasets
+  data_fix = data.frame(M = M, X = X, all_Cs)
+  data_ran = data.frame(M = M, X = X)
+
+  lin_preds = get_lin_preds(data_fix, data_ran, beta_Y, Gamma_Y, add_intercept = TRUE)
+  all_probs = boot::inv.logit(lin_preds)
+
+  Y = stats::rbinom(n, 1, all_probs)
+
   return(stats::rbinom(n, 1, 0.5))
 }
 
@@ -119,7 +131,7 @@ make_Y_validation <- function(M, X, C, all_reg_pars){
 #'
 #' @examples
 #' make_all_reg_pars()
-make_all_reg_pars <- function(beta_Y = 0.2 * c(1, -1, 1, -1, 1), Gamma_Y = 0.25 * diag(3), beta_M = 0.3 * c(-1, 1, -1, 1), Gamma_M = 0.25 * diag(2)){
+make_all_reg_pars <- function(beta_Y = c(1, -1.5, 1, -1.5, 1), Gamma_Y = diag(3), beta_M = c(-1, 1, -1, 1), Gamma_M = diag(2)){
   list(beta_Y = beta_Y, Gamma_Y = Gamma_Y, beta_M = beta_M, Gamma_M = Gamma_M)
 }
 

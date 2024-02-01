@@ -93,7 +93,7 @@ one_bootstrap <- function(data = NULL, mod_Y = NULL, mod_M = NULL, parametric = 
 #' @param parametric Indicates whether to perform parametric or non-parametric bootstrap.
 #' @param .careful Should input be checked for whether enough information has been provided for the requested flavour of bootstrap? Recommended setting is `TRUE` if running interactively and `FALSE` if running inside another function which has already checked.
 #'
-#' @return A single bootstrap sample, formatted as a tibble.
+#' @return A single bootstrap sample, formatted as a data.frame.
 #' @export
 #'
 #' @examples

@@ -5,7 +5,7 @@
 
 #' Construct a single data frame by `rbind`-ing elements of a list. Add/Create group labels.
 #'
-#' @param X_list A list of data frame-like objects (e.g. data frames, tibbles). Must all have the same number of columns.
+#' @param X_list A list of data frames. Must all have the same number of columns.
 #' @param group_labels Optionally, a vector of labels for each element of `X_list`. Must be either the same length as `X_list` or equal to the total number of rows among elements in `X_list`. If `NULL`, labels are `G1`, `G2`,...
 #'
 #' @return A data frame containing all elements of `X_list` with an extra column for labels.

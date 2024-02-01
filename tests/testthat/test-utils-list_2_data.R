@@ -47,7 +47,7 @@ test_that("Dimensions of stack are correct",{
   expect_equal(ncol(X_data), 3)
 })
 
-test_that("Created tibble has a column of group labels",{
+test_that("Created data.frame has a column of group labels",{
   expect_false(is.null(X_data["group"]))
 })
 

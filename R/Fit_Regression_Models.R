@@ -11,7 +11,7 @@
 
 #' Fit a regression model to the observed data with outcome as response variable
 #'
-#' @param data The observed data. A data.frame-like object (e.g. a tibble).
+#' @param data The observed data. A data.frame.
 #'
 #' @return A GLMM fit using `glmer` from the `lme4` package.
 #' @export
@@ -28,7 +28,7 @@ fit_mod_Y <- function(data){
 
 #' Fit a regression model to the observed data with mediator as response variable
 #'
-#' @param data The observed data. A data.frame-like object (e.g. a tibble).
+#' @param data The observed data. A data.frame.
 #'
 #' @return A GLMM fit using `glmer` from the `lme4` package.
 #' @export

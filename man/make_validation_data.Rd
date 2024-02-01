@@ -13,7 +13,7 @@ make_validation_data(n, K, all_reg_pars = NULL, output_list = TRUE)
 
 \item{all_reg_pars}{A named list containing fixed and mixed effects parameters for both regression models. Best obtained from \code{make_all_reg_pars()}.}
 
-\item{output_list}{Should output be formatted as a list with one component per group (of size n-by-5) or a single tibble of size (Kn)-by-6 with a column labelled \code{group}?}
+\item{output_list}{Should output be formatted as a list with one component per group (of size n-by-5) or a single data.frame of size (Kn)-by-6 with a column labelled \code{group}?}
 }
 \value{
 A simulated dataset.
@@ -29,6 +29,6 @@ all_reg_pars = make_all_reg_pars()
 # Format output as a list
 make_validation_data(n, K, all_reg_pars, output_list = TRUE)
 
-# Format output as a tibble
+# Format output as a data.frame
 make_validation_data(n, K, all_reg_pars, output_list = FALSE)
 }

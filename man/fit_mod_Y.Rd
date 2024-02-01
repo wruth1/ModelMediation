@@ -7,7 +7,7 @@
 fit_mod_Y(data)
 }
 \arguments{
-\item{data}{The observed data. A data.frame-like object (e.g. a tibble).}
+\item{data}{The observed data. A data.frame.}
 }
 \value{
 A GLMM fit using \code{glmer} from the \code{lme4} package.

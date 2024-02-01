@@ -5,10 +5,10 @@
 \title{Store all regression parameters in a single list}
 \usage{
 make_all_reg_pars(
-  beta_Y = 0.2 * c(1, -1, 1, -1, 1),
-  Gamma_Y = 0.25 * diag(3),
-  beta_M = 0.3 * c(-1, 1, -1, 1),
-  Gamma_M = 0.25 * diag(2)
+  beta_Y = c(1, -1.5, 1, -1.5, 1),
+  Gamma_Y = diag(3),
+  beta_M = c(-1, 1, -1, 1),
+  Gamma_M = diag(2)
 )
 }
 \arguments{

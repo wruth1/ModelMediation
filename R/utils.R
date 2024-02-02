@@ -81,6 +81,8 @@ list_2_data_make_labels <- function(X_list, group_labels = NULL){
 
 # Compute linear predictors ----
 
+
+
 #' Compute the contribution to the linear predictor due to the provided dataset and coefficient vector
 #'
 #' @param data A dataset. Can be a data frame or a matrix (former is converted to latter internally)
@@ -213,4 +215,33 @@ get_lin_preds <- function(data_fix, data_ran, beta, Gamma, add_intercept = NULL,
   } else{
     return(lin_preds)
   }
+}
+
+
+
+
+
+# Check for membership in a data frame ----
+
+
+is_in_DF <- function(x, data){
+  for(i in 1:nrow(data)){
+    y = dplyr::slice(data, i)
+
+    if(all(x == y)) return(TRUE)
+  }
+
+  return(FALSE)
+}
+
+
+is_DF1_subset_DF2 <- function(DF1, DF2){
+  all_checks = rep(FALSE, times = nrow(DF1))
+
+  for(i in 1:nrow(DF1)){
+    all_checks[i] = is_in_DF(DF1[i,], DF2)
+  }
+
+  is_subset = all(all_checks)
+  return(is_subset)
 }

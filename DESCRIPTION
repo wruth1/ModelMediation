@@ -17,7 +17,7 @@ BugReports: https://github.com/wruth1/ModelMediation/issues
 Imports: 
     boot,
     dplyr,
-    lme4,
+    lme4 (>= 1.1-35.1),
     magrittr,
     MASS,
     purrr,

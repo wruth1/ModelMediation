@@ -18,6 +18,7 @@ mod_M = fit_mod_M(data)
 data_par = one_parametric_resample(mod_Y, mod_M)
 
 
+
 test_that("Size of non-parametric sample is correct",{
   expect_equal(nrow(data_npar), nrow(data))
   expect_equal(ncol(data_npar), ncol(data))

@@ -70,6 +70,10 @@ one_parametric_resample <- function(mod_Y, mod_M){
 
   # Re-combine groups into a single data.frame
   data_new = purrr::list_rbind(data_list)
+
+  # Convert group variable from factor back to character
+  data_new %<>% dplyr::mutate_if(is.factor, as.character)
+  # data_new$group = as.character(data_new$group)
   return(data_new)
 }
 

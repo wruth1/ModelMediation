@@ -222,6 +222,7 @@ get_lin_preds <- function(data_fix, data_ran, beta, Gamma, add_intercept = NULL,
 
 
 # Check for membership in a data frame ----
+# These are only used for testing the non-parametric bootstrap sampler
 
 
 is_in_DF <- function(x, data){

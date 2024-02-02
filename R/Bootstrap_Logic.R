@@ -26,40 +26,52 @@
 #' run_bootstrap(B, mod_Y = mod_Y, mod_M = mod_M, parametric = TRUE, .parallel = FALSE)
 #'
 #' run_bootstrap(B, data = data, parametric = FALSE, .parallel = FALSE)
-run_bootstrap <- function(B, data = NULL, mod_Y = NULL, mod_M = NULL, parametric = TRUE, .parallel = TRUE, .verbose = TRUE){
+run_bootstrap <- function(B, data = NULL, mod_Y = NULL, mod_M = NULL, parametric = TRUE, .parallel = FALSE, .verbose = TRUE){
   check_bootstrap_inputs(data, mod_Y, mod_M, parametric)
 
   if(.verbose){
     ### Initialize Progress Bar ----
+    ### Note: DoSNOW_opts is only used if .parallel == T
     prog = txtProgressBar(max = B, style = 3)
-    prog_update = function(n)
-      setTxtProgressBar(prog, n)
+    prog_update = function(n) setTxtProgressBar(prog, n)
     DoSNOW_opts = list(progress = prog_update)
   } else{
     DoSNOW_opts = list()
   }
 
+  # Run B bootstrap analyses
   if(.parallel){
-    # Run B bootstrap analyses in parallel
-    if(.verbose){
-      ## Run analyses with progress bar
-    } else{
-      ## Run analyses without progress bar
+    ## Parallel ----
+    all_boot_results = foreach(i = seq_len(B), .options.snow = DoSNOW_opts) %dopar% {
+      set.seed(i * 1000)
+
+      this_boot_results = one_bootstrap(data, mod_Y, mod_M, parametric)
+      this_boot_results$b = i
+
+      return(this_boot_results)
     }
-  } else{
-    # Run B bootstrap analyses in serial
-    if(.verbose){
-      ## Run analyses with progress bar
-    } else{
-      ## Run analyses without progress bar
+  } else {
+    ## Serial ----
+    all_boot_results = foreach::foreach(i = seq_len(B)) %do% {
+      set.seed(i * 1000)
+
+      this_boot_results = one_bootstrap(data, mod_Y, mod_M, parametric)
+      this_boot_results$b = i
+
+      if(.verbose){
+        prog_update(i)
+        cat("\n")
+      }
+
+      return(this_boot_results)
     }
   }
-
-  # Format output into standard format for CIs
-  output = data.frame(X_in_Y = c(1,1), M_in_Y = c(2,2), X_in_M = c(3,3), B = 1:2, group = c("fixed", "1"))
+  # Format output as a single data frame
+  output = purrr::list_rbind(all_boot_results)
 
   return(output)
 }
+
 
 
 
@@ -152,7 +164,7 @@ one_bootstrap_sample <- function(data = NULL, mod_Y = NULL, mod_M = NULL, parame
 #' @param mod_M Regression model for predicting `M`. Recommended but optional for parametric (as long as `data` is supplied), not used for non-parametric.
 #' @param parametric Indicates whether to perform parametric or non-parametric bootstrap.
 #'
-#' @return `TRUE` if there is sufficient information available to fit the requested bootstrap. `FALSE` otherwise. See arguments for restrictions.
+#' @return `TRUE` if there is sufficient information available to fit the requested bootstrap. `FALSE` otherwise. See arguments for requirements
 #' @export
 #'
 #' @examples

@@ -89,5 +89,10 @@ some_info <- function() {
   covr::report()
 
 
+  # Misc ----
+
+  ## To use the foreach package, you must re-define %do% and/or %dopar% ----
+  `%do%` <- foreach::`%do%`
+  `%dopar%` <- foreach::`%dopar%`
 
 }

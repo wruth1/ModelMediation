@@ -246,3 +246,10 @@ is_DF1_subset_DF2 <- function(DF1, DF2){
   is_subset = all(all_checks)
   return(is_subset)
 }
+
+
+
+
+# Define %do% and %dopar% for use with the foreach package ----
+`%do%` <- foreach::`%do%`
+`%dopar%` <- foreach::`%dopar%`

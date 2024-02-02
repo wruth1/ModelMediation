@@ -30,7 +30,13 @@ run_bootstrap <- function(B, data = NULL, mod_Y = NULL, mod_M = NULL, parametric
   check_bootstrap_inputs(data, mod_Y, mod_M, parametric)
 
   if(.verbose){
-    # Construct progress bar
+    ### Initialize Progress Bar ----
+    prog = txtProgressBar(max = B, style = 3)
+    prog_update = function(n)
+      setTxtProgressBar(prog, n)
+    DoSNOW_opts = list(progress = prog_update)
+  } else{
+    DoSNOW_opts = list()
   }
 
   if(.parallel){
@@ -125,19 +131,16 @@ one_bootstrap_sample <- function(data = NULL, mod_Y = NULL, mod_M = NULL, parame
     models_present = !(is.null(mod_Y) || is.null(mod_M))
 
     if(models_present){
-      boot_data = one_parametric_resample(mod_Y, mod_M)
+      return(one_parametric_resample(mod_Y, mod_M))
     } else{
       mod_Y = fit_mod_Y(data)
       mod_M = fit_mod_M(data)
 
-      boot_data = one_parametric_resample(mod_Y, mod_M)
+      return(one_parametric_resample(mod_Y, mod_M))
     }
   } else{
-    boot_data = one_non_parametric_sample(data)
+    return(one_non_parametric_sample(data))
   }
-
-  #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! Placeholder
-  boot_data = data
 
   return(boot_data)
 }

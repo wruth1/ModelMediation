@@ -20,7 +20,8 @@
 one_non_parametric_sample <- function(data){
   new_data = data %>% dplyr::group_by(group) %>%      # Split data into groups
     dplyr::slice_sample(prop = 1, replace = TRUE) %>% # Resample within each group
-    dplyr::ungroup()                                  # Remove grouping structure
+    dplyr::ungroup() %>%                              # Remove grouping structure
+    data.frame()                                      # Convert back to a regular data.frame (from a tibble)
   return(new_data)
 }
 
@@ -71,9 +72,9 @@ one_parametric_resample <- function(mod_Y, mod_M){
   # Re-combine groups into a single data.frame
   data_new = purrr::list_rbind(data_list)
 
-  # Convert group variable from factor back to character
+  # Convert all factors into character variables
+  ## In particular, the `group` variable
   data_new %<>% dplyr::mutate_if(is.factor, as.character)
-  # data_new$group = as.character(data_new$group)
   return(data_new)
 }
 

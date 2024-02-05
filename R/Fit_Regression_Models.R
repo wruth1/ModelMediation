@@ -24,7 +24,9 @@
 #'
 #' fit_mod_Y(data)
 fit_mod_Y <- function(data){
-  lme4::glmer(Y ~ M + X + C1 + C2 + (M + X | group), data = data, family = "binomial")
+  suppressMessages(
+    lme4::glmer(Y ~ M + X + C1 + C2 + (M + X | group), data = data, family = "binomial")
+  )
 }
 
 
@@ -45,5 +47,7 @@ fit_mod_Y <- function(data){
 #'
 #' fit_mod_M(data)
 fit_mod_M <- function(data){
-  lme4::glmer(M ~ X + C1 + C2 + (X | group), data = data, family = "binomial")
+  suppressMessages(
+    lme4::glmer(M ~ X + C1 + C2 + (X | group), data = data, family = "binomial")
+  )
 }

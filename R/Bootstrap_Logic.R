@@ -32,8 +32,8 @@ run_bootstrap <- function(B, data = NULL, mod_Y = NULL, mod_M = NULL, parametric
   if(.verbose){
     ### Initialize Progress Bar ----
     ### Note: DoSNOW_opts is only used if .parallel == T
-    prog = txtProgressBar(max = B, style = 3)
-    prog_update = function(n) setTxtProgressBar(prog, n)
+    prog = utils::txtProgressBar(max = B, style = 3)
+    prog_update = function(n) utils::setTxtProgressBar(prog, n)
     DoSNOW_opts = list(progress = prog_update)
   } else{
     DoSNOW_opts = list()
@@ -42,7 +42,7 @@ run_bootstrap <- function(B, data = NULL, mod_Y = NULL, mod_M = NULL, parametric
   # Run B bootstrap analyses
   if(.parallel){
     ## Parallel ----
-    all_boot_results = foreach(i = seq_len(B), .options.snow = DoSNOW_opts) %dopar% {
+    all_boot_results = foreach::foreach(i = seq_len(B), .options.snow = DoSNOW_opts) %dopar% {
       set.seed(i * 1000)
 
       this_boot_results = one_bootstrap(data, mod_Y, mod_M, parametric)
@@ -145,6 +145,7 @@ one_bootstrap_sample <- function(data = NULL, mod_Y = NULL, mod_M = NULL, parame
     if(models_present){
       return(one_parametric_resample(mod_Y, mod_M))
     } else{
+      # If models are not supplied, fit them, then generate the bootstrap sample
       mod_Y = fit_mod_Y(data)
       mod_M = fit_mod_M(data)
 
@@ -153,8 +154,6 @@ one_bootstrap_sample <- function(data = NULL, mod_Y = NULL, mod_M = NULL, parame
   } else{
     return(one_non_parametric_sample(data))
   }
-
-  return(boot_data)
 }
 
 #' Check whether enough information has been provided to fit the requested flavour of bootstrap

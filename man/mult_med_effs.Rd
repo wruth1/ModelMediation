@@ -32,7 +32,7 @@ data = make_validation_data(n, K, all_reg_pars)
 mod_Y = fit_mod_Y(data)
 mod_M = fit_mod_M(data)
 
-all_reg_coeffs = mix_coeffs_for_mediation(mod_Y, mod_M)
+all_reg_coeffs = reg_coeffs_for_mediation(mod_Y, mod_M)
 get_med_effs_DF(all_reg_coeffs)
 
 # get_med_effs_lme4 combines the previous two steps

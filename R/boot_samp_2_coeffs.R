@@ -10,6 +10,25 @@ boot_samp_2_coeffs <- function(boot_data){
   return(output)
 }
 
+
+
+#' Extract regression coefficients which are relevant for mediation analysis
+#'
+#' @param mod_Y,mod_M Regression models for predicting the outcome and mediators respectively
+#'
+#' @return A data frame containing regression coefficients for mediation analysis, as well as group labels
+#' @export
+#'
+#' @examples
+#' n = 20
+#' K = 3
+#' all_reg_pars = make_all_reg_pars()
+#' data = make_validation_data(n, K, all_reg_pars)
+#'
+#' mod_Y = fit_mod_Y(data)
+#' mod_M = fit_mod_M(data)
+#'
+#' reg_coeffs_for_mediation(mod_Y, mod_M)
 reg_coeffs_for_mediation <- function(mod_Y, mod_M){
   fix_coeffs = fix_coeffs_for_mediation(mod_Y, mod_M)
 
@@ -36,7 +55,6 @@ fix_coeffs_for_mediation <- function(mod_Y, mod_M){
 
 
 # Mixed coefficients (i.e. group-level) ----
-
 mix_coeffs_for_mediation <- function(mod_Y, mod_M){
   mix_coeffs_Y = stats::coefficients(mod_Y)[[1]]
   mix_coeffs_M = stats::coefficients(mod_M)[[1]]

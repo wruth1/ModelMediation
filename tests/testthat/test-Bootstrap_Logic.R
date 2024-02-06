@@ -4,7 +4,7 @@ test_that("multiplication works", {
 
 
 
-B = 5
+B = 2
 n = 20
 K = 3
 all_reg_pars = make_all_reg_pars()

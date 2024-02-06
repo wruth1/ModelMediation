@@ -27,6 +27,8 @@ A data frame containing bootstrap CIs for each group and mediation effect. Colum
 \item Group label (\code{group})
 \item Type of mediation effect (\code{med_type}, values include \code{de}, \code{ie} and \code{te})
 \item Type of confidence interval (\code{CI_type}, values include \code{pct} and \code{bas})
+\item Lower and upper confidence limits (\code{lcl} and \code{ucl} respectively)
+\item If available, the point estimate for each mediation effect on each group (\code{estimate}, repeated for the two types of interval if both are requested)
 }
 }
 \description{

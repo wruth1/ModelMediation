@@ -22,7 +22,7 @@
 #' mod_Y = fit_mod_Y(data)
 #' mod_M = fit_mod_M(data)
 #'
-#' all_reg_coeffs = mix_coeffs_for_mediation(mod_Y, mod_M)
+#' all_reg_coeffs = reg_coeffs_for_mediation(mod_Y, mod_M)
 #' get_med_effs_DF(all_reg_coeffs)
 #'
 #' # get_med_effs_lme4 combines the previous two steps
@@ -57,11 +57,19 @@ get_med_effs_DF <- function(all_reg_coeffs){
 #' @rdname mult_med_effs
 #' @export
 get_med_effs_lme4 <- function(mod_Y, mod_M){
-  all_reg_coeffs = mix_coeffs_for_mediation(mod_Y, mod_M)
+  all_reg_coeffs = reg_coeffs_for_mediation(mod_Y, mod_M)
   all_med_effs = get_med_effs_DF(all_reg_coeffs)
 
   return(all_med_effs)
 }
+
+
+# Reformat mediation effects from output of get_med_effs_X() to input for get_boot_CIs()
+med_effs_wide_2_tall <- function(wide_med_effs){
+  wide_med_effs %>%
+    tidyr::pivot_longer(!group, names_to = "med_type", values_to = "estimate")
+}
+
 
 
 #' Compute mediation effects based on regression parameters, respecting the variable types of Y and M
@@ -116,3 +124,4 @@ get_med_effs_binY_binM = function(X_in_Y, M_in_Y, X_in_M){
 
 
 
+dplyr::filter(boot_output, group=="fixed")

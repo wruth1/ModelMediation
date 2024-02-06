@@ -37,16 +37,45 @@ get_boot_CIs <- function(boot_reg_coeffs, type = c("percentile", "basic"), fitte
     }
   }
 
+
+
   # Get percentile intervals ----
   # Note: These intervals are required to compute basic intervals too, so we compute them whether they will be in the final output or not.
   boot_med_effs = get_boot_med_effs(boot_reg_coeffs)
   percentile_CIs = get_percentile_CIs(boot_med_effs)
 
-  if(!is.null(fitted_med_effs)){
-    #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! START HERE
+  # If possible, add estimates from the observed data to output----
+  if(models_present){
+    estimates = get_med_effs_lme4(mod_Y, mod_M) %>%
+      med_effs_wide_2_tall()
+    percentile_CIs = dplyr::full_join(percentile_CIs, estimates, by = c("group", "med_type"))
+  } else if(!is.null(fitted_med_effs)){
+    estimates = med_effs_wide_2_tall(fitted_med_effs)
+    percentile_CIs = dplyr::full_join(percentile_CIs, estimates, by = c("group", "med_type"))
   }
 
+  # Add label for percentile intervals
+  percentile_CIs$CI_type = "pct"
 
+  # If only percentile intervals are requested, we're done ----
+  if(identical(type, "percentile")) return(percentile_CIs)
+
+  # Construct basic CIs ----
+  basic_CIs = percentile_CIs %>%
+    dplyr::mutate(lcl_new = 2*estimate - ucl, ucl_new = 2*estimate - lcl, estimate = estimate, .keep = "unused") %>%
+    dplyr::rename(lcl = lcl_new, ucl = ucl_new) %>%
+    dplyr::mutate(CI_type = "bas") %>%
+    dplyr::relocate(estimate, CI_type, .after=last_col())
+
+  # If only basic intervals are requested, we're done
+  if(identical(type, "basic")) return(basic_CIs)
+
+
+  # Combine both intervals
+  all_intervals = dplyr::full_join(percentile_CIs, basic_CIs, by = c("group", "med_type"))
+  all_intervals = rbind(percentile_CIs, basic_CIs)
+
+  return(all_intervals)
 }
 
 #
@@ -76,9 +105,9 @@ get_boot_med_effs <- function(boot_reg_coeffs){
 get_percentile_CIs <- function(boot_med_effs){
   boot_med_effs %>%
     dplyr::group_by(group) %>%
-    dplyr::summarise(de_lcl = quantile(de, 0.025), de_ucl = quantile(de, 0.975),
-                     ie_lcl = quantile(ie, 0.025), ie_ucl = quantile(ie, 0.975),
-                     te_lcl = quantile(te, 0.025), te_ucl = quantile(te, 0.975)) %>%
+    dplyr::summarise(de_lcl = stats::quantile(de, 0.025), de_ucl = stats::quantile(de, 0.975),
+                     ie_lcl = stats::quantile(ie, 0.025), ie_ucl = stats::quantile(ie, 0.975),
+                     te_lcl = stats::quantile(te, 0.025), te_ucl = stats::quantile(te, 0.975)) %>%
     tidyr::pivot_longer(!group, names_to = c("med_type", "endpoint"), names_sep = "_") %>%
     tidyr::pivot_wider(names_from = "endpoint", values_from = "value")
 

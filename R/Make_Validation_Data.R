@@ -2,7 +2,10 @@
 
 #' Generate a dataset for validating methodology
 #'
-#' Generate a validation dataset with `n` observations in each of `K` groups. Variables include one outcome (Y), one exposure (X), one mediator (M) and two confounders (C1 and C2). All variables are binary. Default values are provided for regression parameters (fixed effects and covariances of random effects).
+#' @description
+#' Generate a validation dataset with `n` observations in each of `K` groups. Variables include one outcome (Y), one mediator (M), one exposure (X), and two confounders (C1 and C2). All variables are binary. Default values are available for regression parameters (fixed effects and covariances of random effects).
+#'
+#' Order of variables is `Y`, `M`, `X`, `C1`, `C2`
 #'
 #' @param n Number of observations in each group.
 #' @param K Number of groups
@@ -104,34 +107,5 @@ make_Y_validation <- function(M, X, all_Cs, all_reg_pars){
   Y = stats::rbinom(n, 1, all_probs)
 
   return(stats::rbinom(n, 1, 0.5))
-}
-
-
-
-
-
-
-
-
-
-
-
-
-# Helper Functions ----
-
-#' Store all regression parameters in a single list
-#'
-#' @param beta_Y Vector of length 4 containing fixed-effects for the outcome model. Order of variables is: Intercept, X, M, C1, C2.
-#' @param Gamma_Y Covariance matrix of size 3x3 containing random effects for the outcome model. Order of variables is: Intercept, X, M.
-#' @param beta_M Vector of length 3 containing fixed-effects for the outcome model. Order is: Intercept, X, C1, C2.
-#' @param Gamma_M Covariance matrix of size 2x2 containing random effects for the outcome model. Order of variables is: Intercept, X.
-#'
-#' @return A named list containing fixed and random effects parameters for both the outcome and mediator regression models. Names in list match names of arguments to this function.
-#' @export
-#'
-#' @examples
-#' make_all_reg_pars()
-make_all_reg_pars <- function(beta_Y = c(1, -1.5, 1, -1.5, 1), Gamma_Y = diag(3), beta_M = c(-1, 1, -1, 1), Gamma_M = diag(2)){
-  list(beta_Y = beta_Y, Gamma_Y = Gamma_Y, beta_M = beta_M, Gamma_M = Gamma_M)
 }
 

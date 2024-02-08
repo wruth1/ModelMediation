@@ -1,5 +1,27 @@
 
 
+# For setting model parameters
+
+#' Store all regression parameters in a single list
+#'
+#' @param beta_Y Vector of length 4 containing fixed-effects for the outcome model. Order of variables is: Intercept, M, X, C1, C2.
+#' @param Gamma_Y Covariance matrix of size 3x3 containing random effects for the outcome model. Order of variables is: Intercept, M, X.
+#' @param beta_M Vector of length 3 containing fixed-effects for the outcome model. Order is: Intercept, X, C1, C2.
+#' @param Gamma_M Covariance matrix of size 2x2 containing random effects for the outcome model. Order of variables is: Intercept, X.
+#'
+#' @return A named list containing fixed and random effects parameters for both the outcome and mediator regression models. Names in list match names of arguments to this function.
+#' @export
+#'
+#' @examples
+#' make_all_reg_pars()
+make_all_reg_pars <- function(beta_Y = c(1, -1.5, 1, -1.5, 1), Gamma_Y = diag(3), beta_M = c(-1, 1, -1, 1), Gamma_M = diag(2)){
+  list(beta_Y = beta_Y, Gamma_Y = Gamma_Y, beta_M = beta_M, Gamma_M = Gamma_M)
+}
+
+
+
+
+
 # list_2_data and its helpers ----
 
 

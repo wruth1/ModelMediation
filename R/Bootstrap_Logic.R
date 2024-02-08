@@ -43,7 +43,7 @@ run_bootstrap <- function(B, data = NULL, mod_Y = NULL, mod_M = NULL, parametric
   if(.parallel){
     ## Parallel ----
     all_boot_results = foreach::foreach(i = seq_len(B), .options.snow = DoSNOW_opts) %dopar% {
-      set.seed(i * 1000)
+      # set.seed(i * 1000)  # Let the user set.seed at a higher level
 
       this_boot_results = one_bootstrap(data, mod_Y, mod_M, parametric)
       this_boot_results$b = i
@@ -53,7 +53,7 @@ run_bootstrap <- function(B, data = NULL, mod_Y = NULL, mod_M = NULL, parametric
   } else {
     ## Serial ----
     all_boot_results = foreach::foreach(i = seq_len(B)) %do% {
-      set.seed(i * 1000)
+      # set.seed(i * 1000)  # Let the user set.seed at a higher level
 
       this_boot_results = one_bootstrap(data, mod_Y, mod_M, parametric)
       this_boot_results$b = i
@@ -103,9 +103,18 @@ one_bootstrap <- function(data = NULL, mod_Y = NULL, mod_M = NULL, parametric = 
     check_bootstrap_inputs(data, mod_Y, mod_M, parametric)
   }
 
-  boot_data = one_bootstrap_sample(data, mod_Y, mod_M, parametric, .careful = FALSE)
+  boot_successful = FALSE
 
-  boot_coeffs = boot_samp_2_coeffs(boot_data)
+  while(!boot_successful){
+    tryCatch({
+      boot_data = one_bootstrap_sample(data, mod_Y, mod_M, parametric, .careful = FALSE)
+
+      boot_coeffs = boot_samp_2_coeffs(boot_data)
+
+      boot_successful = TRUE
+    },
+    error = function(e){ e}) #num_failed_boots <<- num_failed_boots + 1})
+  }
 
   return(boot_coeffs)
 }

@@ -78,9 +78,6 @@ get_boot_CIs <- function(boot_reg_coeffs, type = c("percentile", "basic"), fitte
   return(all_intervals)
 }
 
-#
-# reg_coeffs_for_mediation(mod_Y, mod_M) %>%
-#   get_med_effs()
 
 
 

@@ -19,7 +19,9 @@ make_validation_data(n, K, all_reg_pars = NULL, output_list = FALSE)
 A simulated dataset.
 }
 \description{
-Generate a validation dataset with \code{n} observations in each of \code{K} groups. Variables include one outcome (Y), one exposure (X), one mediator (M) and two confounders (C1 and C2). All variables are binary. Default values are provided for regression parameters (fixed effects and covariances of random effects).
+Generate a validation dataset with \code{n} observations in each of \code{K} groups. Variables include one outcome (Y), one mediator (M), one exposure (X), and two confounders (C1 and C2). All variables are binary. Default values are available for regression parameters (fixed effects and covariances of random effects).
+
+Order of variables is \code{Y}, \code{M}, \code{X}, \code{C1}, \code{C2}
 }
 \examples{
 n = 20

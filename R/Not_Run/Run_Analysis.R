@@ -3,7 +3,7 @@ library(foreach)
 
 # num_failed_boots = 0
 
-n = 20
+n = 200
 K = 3
 all_reg_pars = make_all_reg_pars()
 data = make_validation_data(n, K, all_reg_pars)
@@ -36,7 +36,6 @@ prog = utils::txtProgressBar(max = num_MC_reps, style = 3)
 prog_update = function(n) utils::setTxtProgressBar(prog, n)
 DoSNOW_opts = list(progress = prog_update)
 
-tictoc::tic()
 all_boot_results_parallel = foreach::foreach(i = seq_len(num_MC_reps), .options.snow = DoSNOW_opts) %dopar% {
   set.seed(i * 1000)
 
@@ -104,7 +103,7 @@ cover_by_var <- function(var_name, data){
 }
 
 
-
+cover_global = mean(all_cover_rates$cover_rate)
 cover_by_group = all_cover_rates %>% dplyr::group_by(group) %>% dplyr::summarise(cover_rate = mean(cover_rate))
 cover_by_med_type = all_cover_rates %>% dplyr::group_by(med_type) %>% dplyr::summarise(cover_rate = mean(cover_rate))
 cover_by_CI_type = all_cover_rates %>% dplyr::group_by(CI_type) %>% dplyr::summarise(cover_rate = mean(cover_rate))
@@ -112,6 +111,7 @@ cover_by_boot_type = all_cover_rates %>% dplyr::group_by(boot_type) %>% dplyr::s
 
 pct_cover_rates = dplyr::filter(all_cover_rates, CI_type == "pct")
 
+pct_cover_global = mean(pct_cover_rates$cover_rate)
 pct_cover_by_group = cover_by_var("group", pct_cover_rates)
 pct_cover_by_med_type = cover_by_var("med_type", pct_cover_rates)
 pct_cover_by_boot_type = cover_by_var("boot_type", pct_cover_rates)

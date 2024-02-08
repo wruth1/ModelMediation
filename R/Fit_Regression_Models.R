@@ -3,6 +3,12 @@
 # For now, this file must be updated anytime the model must be changed. Ultimately, these changes will be implemented by calling the constructor with new arguments.
 
 
+fix_package_version <- function(){
+  oo <- options(repos = "https://cran.r-project.org/")
+  install.packages("Matrix")
+  install.packages("lme4")
+  options(oo)
+}
 
 
 
@@ -22,6 +28,7 @@
 #'
 #' fit_mod_Y(data)
 fit_mod_Y <- function(data){
+  fix_package_version()
   suppressMessages(
     lme4::glmer(Y ~ M + X + C1 + C2 + (M + X | group), data = data, family = "binomial")
   )
@@ -45,6 +52,7 @@ fit_mod_Y <- function(data){
 #'
 #' fit_mod_M(data)
 fit_mod_M <- function(data){
+  fix_package_version()
   suppressMessages(
     lme4::glmer(M ~ X + C1 + C2 + (X | group), data = data, family = "binomial")
   )

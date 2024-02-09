@@ -15,6 +15,7 @@ an_analysis <- function(){
 #' @param data Observed dataset.
 #' @param B Number of bootstrap replicates.
 #' @param .parallel Should bootstrapping be performed in parallel?
+#' @param .verbose Should progress bars be produced for the two bootstrap analyses?
 #'
 #' @return A data frame containing confidence intervals for each mediation effect, in each group, for all flavours of bootstrap and bootstrap CI.
 #' @export

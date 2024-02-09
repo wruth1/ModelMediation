@@ -12,6 +12,8 @@ run_analysis(data, B, .parallel = FALSE, .verbose = FALSE)
 \item{B}{Number of bootstrap replicates.}
 
 \item{.parallel}{Should bootstrapping be performed in parallel?}
+
+\item{.verbose}{Should progress bars be produced for the two bootstrap analyses?}
 }
 \value{
 A data frame containing confidence intervals for each mediation effect, in each group, for all flavours of bootstrap and bootstrap CI.

@@ -58,4 +58,3 @@ run_analysis <- function(data, B, .parallel = FALSE, .verbose = FALSE){
 # predict(fit, newdata=data.frame(X=1000))
 #
 
-

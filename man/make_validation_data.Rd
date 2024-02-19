@@ -4,7 +4,13 @@
 \alias{make_validation_data}
 \title{Generate a dataset for validating methodology}
 \usage{
-make_validation_data(n, K, all_reg_pars = NULL, output_list = FALSE)
+make_validation_data(
+  n,
+  K,
+  all_reg_pars = NULL,
+  output_list = FALSE,
+  return_REs = FALSE
+)
 }
 \arguments{
 \item{n}{Number of observations in each group.}
@@ -14,9 +20,11 @@ make_validation_data(n, K, all_reg_pars = NULL, output_list = FALSE)
 \item{all_reg_pars}{A named list containing fixed and mixed effects parameters for both regression models. Best obtained from \code{make_all_reg_pars()}.}
 
 \item{output_list}{Should output be formatted as a list with one component per group (of size n-by-5) or a single data.frame of size (Kn)-by-6 with a column labelled \code{group}?}
+
+\item{return_REs}{Should random effects also be returned? If TRUE, output is a list containing two components: \code{data} and \code{REs}.}
 }
 \value{
-A simulated dataset.
+A simulated dataset, optionally inside a list which also contains random effects.
 }
 \description{
 Generate a validation dataset with \code{n} observations in each of \code{K} groups. Variables include one outcome (Y), one mediator (M), one exposure (X), and two confounders (C1 and C2). All variables are binary. Default values are available for regression parameters (fixed effects and covariances of random effects).

@@ -8,7 +8,7 @@ check_bootstrap_inputs(
   data = NULL,
   mod_Y = NULL,
   mod_M = NULL,
-  parametric = TRUE
+  boot_type = c("par", "npar", "spar")
 )
 }
 \arguments{
@@ -18,7 +18,7 @@ check_bootstrap_inputs(
 
 \item{mod_M}{Regression model for predicting \code{M}. Recommended but optional for parametric (as long as \code{data} is supplied), not used for non-parametric.}
 
-\item{parametric}{Indicates whether to perform parametric or non-parametric bootstrap.}
+\item{boot_type}{Indicates which type of bootstrap should be performed. Options include parametric (\code{par}), non-parametric (\code{npar}), and semi-parametric (\code{spar}).}
 }
 \value{
 \code{TRUE} if there is sufficient information available to fit the requested bootstrap. \code{FALSE} otherwise. See arguments for requirements
@@ -36,18 +36,22 @@ mod_Y = fit_mod_Y(data)
 mod_M = fit_mod_M(data)
 
 # These settings are fine
-check_bootstrap_inputs(mod_Y = mod_Y, mod_M = mod_M, parametric = TRUE)
-check_bootstrap_inputs(data = data, parametric = FALSE)
+check_bootstrap_inputs(mod_Y = mod_Y, mod_M = mod_M, boot_type = "par")
+check_bootstrap_inputs(mod_Y = mod_Y, mod_M = mod_M, boot_type = "spar")
+check_bootstrap_inputs(data = data, boot_type = "npar")
 
 # This setting is not supported
 tryCatch({
-    check_bootstrap_inputs(mod_Y = mod_Y, mod_M = mod_M, parametric = FALSE)
+    check_bootstrap_inputs(mod_Y = mod_Y, mod_M = mod_M, boot_type = "npar")
     print("No error found. This represents a failure of check_bootstrap_inputs()")
   },
   error = function(e) e
 )
 
 
-# This setting is okay, but probably inefficient
-check_bootstrap_inputs(data = data, parametric = TRUE)
+# These settings are okay, but inefficient
+\dontrun{
+ check_bootstrap_inputs(data = data, boot_type = "par")
+ check_bootstrap_inputs(data = data, boot_type = "spar")
+}
 }

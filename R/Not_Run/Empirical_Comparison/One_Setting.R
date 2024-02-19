@@ -10,12 +10,16 @@
 # B = this_settings[3]
 
 
-n = 100
+# n = 100
+# K = 3
+# B = 200
+
+n = 10
 K = 3
-B = 200
+B = 5
 
 
-num_MC_reps = 100
+num_MC_reps = 256
 # num_MC_reps = 10
 
 library(foreach)
@@ -34,9 +38,9 @@ all_reg_pars = make_all_reg_pars()
 
 
 # Initialize Cluster ----
-n_cores = 10
+# n_cores = 10
 # n_cores = parallel::detectCores() - 1
-# n_cores = detectCores()
+n_cores = parallel::detectCores()
 my_cluster = parallel::makeCluster(n_cores)
 doSNOW::registerDoSNOW(cl = my_cluster)
 snow::clusterEvalQ(my_cluster,{
@@ -80,32 +84,40 @@ parallel::stopCluster(my_cluster)
 
 
 
+
+# Read-in results of MC study ----
+
+all_boot_results_list = list()
+dir_names = list.files("./Data")
+
+this_dir = paste0("./Data/", dir_names[1], "/")
+file_names = list.files(this_dir)
+
+
+
+all_boot_results_list = purrr::map(file_names, function(this_name){
+  load(paste0(this_dir, this_name))
+  this_MC_iter = as.numeric(stringr::str_extract(this_name, "\\d+"))
+  this_boot_results$MC_iter = this_MC_iter
+
+  return(this_boot_results)
+})
+all_boot_results = purrr::list_rbind(all_boot_results_list)
+
+
+# # Check for NAs and remove corresponding MC runs
+# ind_na = which(is.na(all_boot_results), arr.ind=T)
+# table(all_boot_results[ind_na[,1], "MC_iter"])
 #
-# # Read-in results of MC study ----
+# all_boot_results %<>% dplyr::filter(!(MC_iter %in% c(62, 175, 189)))
+# sum(is.na(all_boot_results))
+
+
+
+
+# all_boot_results = purrr::list_rbind(all_boot_results_parallel)
 #
-# all_boot_results_list = list()
-# file_names = list.files("./Data")
 #
-#
-#
-# all_boot_results_list = purrr::map(file_names, function(this_name){
-#   load(paste0("./Data/", this_name))
-#   this_MC_iter = as.numeric(str_extract(this_name, "\\d+"))
-#   this_boot_results$MC_iter = this_MC_iter
-#
-#   return(this_boot_results)
-# })
-# all_boot_results = purrr::list_rbind(all_boot_results_list)
-
-
-
-
-
-
-
-all_boot_results = purrr::list_rbind(all_boot_results_parallel)
-
-
 # Add true mediation effects ----
 true_Y_coeffs = all_reg_pars$beta_Y
 true_M_coeffs = all_reg_pars$beta_M

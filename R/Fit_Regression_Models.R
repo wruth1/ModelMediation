@@ -57,9 +57,12 @@ fit_mod_M <- function(data){
 #### More general versions ####
 ###############################
 
+
+
 # In this section, I make strong assumptions about the structure of the data frame which is passed to the fitting functions. I will refer to any data frame which must meet these assumptions as data_formal. The requirements are as follows:
 #   Must contain columns named Y, M, X and group
 #   May also contain other columns. Each such extra column must be a confounder.      !!!! I'm not sure yet whether I want to require that these columns be named C1, C2, ...
+#   Groups must be labelled G1, G2, ...
 
 
 #' Fit regression model for mediator (`M`) using a formal dataset
@@ -69,6 +72,7 @@ fit_mod_M <- function(data){
 #'
 #' - Must contain columns named Y, M, X and group
 #' - May also contain other columns. Each such extra column must be a confounder.      !!!! I'm not sure yet whether I want to require that these columns be named C1, C2, ...
+#' - Groups must be labelled G1, G2, ...
 #'
 #' @param data_formal A formal data frame. See Details for requirements.
 #'
@@ -84,6 +88,114 @@ fit_mod_M <- function(data){
 #' fit_mod_M_formal(data_formal)
 fit_mod_M_formal <- function(data_formal){
   suppressMessages(
-    lme4::glmer(M ~ . - Y + (X | group), data = data_formal, family = "binomial")
+    lme4::glmer(M ~ . - Y - group + (X | group), data = data_formal, family = "binomial")
   )
 }
+
+
+#' Fit regression model for outcome (`Y`) using a formal dataset
+#'
+#' @details
+#' I make strong assumptions about the structure of the data frame which is passed to this function. Such a structured data frame is referred to as `data_formal`. The requirements are as follows:
+#'
+#' - Must contain columns named Y, M, X and group
+#' - May also contain other columns. Each such extra column must be a confounder.      !!!! I'm not sure yet whether I want to require that these columns be named C1, C2, ...
+#' - Groups must be labelled G1, G2, ...
+#'
+#' @param data_formal A formal data frame. See Details for requirements.
+#'
+#' @return A GLMM fit using `glmer` from the `lme4` package.
+#' @export
+#'
+#' @examples
+#' n = 20
+#' K = 3
+#' all_reg_pars = make_all_reg_pars()
+#' data_formal = make_validation_data(n, K, all_reg_pars)
+#'
+#' fit_mod_Y_formal(data_formal)
+fit_mod_Y_formal <- function(data_formal){
+  suppressMessages(
+    lme4::glmer(Y ~ . - group + (M + X | group), data = data_formal, family = "binomial")
+  )
+}
+
+
+rename_one_var <- function(data, new_name, old_name){
+  data = dplyr::rename(data, (!!new_name) := (!!old_name))
+  return(data)
+}
+
+rename_all_vars <- function(data, Y_name = NULL, M_name = NULL, X_name = NULL, group_name = NULL){
+  data_renamed = data
+
+  if(!is.null(Y_name)){
+    data_renamed = rename_one_var(data_renamed, "Y", Y_name)
+  }
+
+  if(!is.null(M_name)){
+    data_renamed = rename_one_var(data_renamed, "M", M_name)
+  }
+
+  if(!is.null(X_name)){
+    data_renamed = rename_one_var(data_renamed, "X", X_name)
+  }
+
+  if(!is.null(group_name)){
+    data_renamed = rename_one_var(data_renamed, "group", group_name)
+  }
+
+  return(data_renamed)
+}
+
+recode_groups <- function(data_renamed){
+  # data_renamed = rbind(data_renamed, data.frame(Y = 1, M=1, X=1, C1=1, C2=1, group="group_4"))    # This line is useful for testing
+
+  old_levels = sort(unique(data_renamed$group))
+
+  new_levels = paste0("G", 1:length(old_levels))
+
+  data_formal = dplyr::mutate(data_renamed, group = forcats::fct_recode(group, !!!setNames(old_levels, new_levels)))
+  return(data_formal)
+}
+
+
+#' Transform `data` into a formal data frame
+#'
+#' @details
+#' I make strong assumptions about the structure of the data frame which is passed to this function. Such a structured data frame is referred to as `data_formal`. The requirements are as follows:
+#'
+#' - Must contain columns named Y, M, X and group
+#' - May also contain other columns. Each such extra column must be a confounder.      !!!! I'm not sure yet whether I want to require that these columns be named C1, C2, ...
+#' - Groups must be labelled G1, G2, ...
+#'
+#' @param data A data frame containing the outcome, mediator, exposure and group variables. May also contain other columns, which are assumed to be confounders.
+#' @param Y_name Name of the outcome variable in `data`. This column name will be converted to `Y`.
+#' @param M_name Name of the mediator variable in `data`. This column name will be converted to `M`.
+#' @param X_name Name of the exposure variable in `data`. This column name will be converted to `X`.
+#' @param group_name Name of the group variable in `data`. This column name will be converted to `group`.
+#'
+#' @return A formal data frame. See Details.
+#' @export
+#'
+#' @examples
+#' B = 2
+#' n = 20
+#' K = 3
+#' all_reg_pars = make_all_reg_pars()
+#' data = make_validation_data(n, K, all_reg_pars)
+#'
+#' # Pollute the data
+#' data_new = data %>%
+#'  rbind(data.frame(Y = 1, M=1, X=1, C1=1, C2=1, group="group_4"), .) %>%  # Add a fourth group with an incompatible name
+#'  dplyr::rename(Y_alt = "Y")                                              # Change the name of Y
+#'
+#'  make_data_formal(data_new, Y_name = "Y_alt", M_name = "M", X_name = "X", group_name = "group")
+make_data_formal <- function(data, Y_name = NULL, M_name = NULL, X_name = NULL, group_name = NULL){
+  data_renamed = rename_all_vars(data, Y_name, M_name, X_name, group_name)
+
+  data_formal = recode_groups(data_renamed)
+
+  return(data_formal)
+}
+

@@ -3,6 +3,8 @@ library(foreach)
 
 # num_failed_boots = 0
 
+B = 500 # Number of bootstrap samples
+
 n = 200
 K = 3
 all_reg_pars = make_all_reg_pars()
@@ -41,8 +43,8 @@ all_boot_results_parallel = foreach::foreach(i = seq_len(num_MC_reps), .options.
 
   data = make_validation_data(n, K, all_reg_pars)
 
-  this_boot_results = run_analysis(data, 500, .verbose = FALSE)
-  this_boot_results = run_analysis(data, 500, .verbose = TRUE, .parallel = TRUE)
+  this_boot_results = run_analysis(data, B, .verbose = TRUE)
+  # this_boot_results = run_analysis(data, B, .verbose = TRUE, .parallel = TRUE)
   # this_boot_results = run_analysis(data, 2, .verbose = FALSE)
   save(this_boot_results, file = paste0("./Data/boot_results-", i, ".RData"))
 

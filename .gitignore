@@ -6,3 +6,4 @@
 .quarto
 Data/*
 ModelMediation.code-workspace
+inst/doc

@@ -122,3 +122,55 @@ replace_Y <- function(data, all_reg_pars){
 }
 
 
+
+
+
+
+# Semi-Parametric ----
+
+
+#' Generate a semiparametric bootstrap sample using the provided fitted models
+#'
+#' @param mod_Y A model fit using `glmer` to predict `Y`
+#' @param mod_M A model fit using `glmer` to predict `M`
+#'
+#' @return A data frame obtained by generating bootstrap samples independently across groups.
+#' @export
+#'
+#' @examples
+#' n = 20
+#' K = 3
+#' all_reg_pars = make_all_reg_pars()
+#' data = make_validation_data(n, K, all_reg_pars)
+#'
+#' mod_Y = fit_mod_Y(data)
+#' mod_M = fit_mod_M(data)
+#'
+#' one_semi_parametric_resample(mod_Y, mod_M)
+one_semi_parametric_resample <- function(mod_Y, mod_M){
+
+  # First, non-parametrically resample X and C (by resampling the entire dataset) ----
+  data_obs = mod_Y@frame
+  warning("Using @frame to access the data may break when interactions are included.")
+  data = one_non_parametric_sample(data_obs)
+
+  # Extract relevant parameters
+  all_reg_pars = all_reg_pars_from_lme4(mod_Y, mod_M)
+
+  # Split data by group
+  data_list = split(data, data$group)
+
+  # Overwrite M and Y within each group
+  for(k in seq_along(data_list)){
+    data_list[[k]] %<>% replace_M(all_reg_pars) %>%
+      replace_Y(all_reg_pars)
+  }
+
+  # Re-combine groups into a single data.frame
+  data_new = purrr::list_rbind(data_list)
+
+  # Convert all factors into character variables
+  ## In particular, the `group` variable
+  data_new %<>% dplyr::mutate_if(is.factor, as.character)
+  return(data_new)
+}

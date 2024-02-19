@@ -1,4 +1,16 @@
 
+#########################################################################################
+#### To Do: Finish modifying functions to facilitate the returning of random effects ####
+#########################################################################################
+
+
+
+
+
+
+
+
+
 
 #' Generate a dataset for validating methodology
 #'
@@ -73,16 +85,21 @@ make_one_group_validation <- function(n, all_reg_pars, return_REs = FALSE){
   all_Cs = make_C_validation(n)
 
   M_info = make_M_validation(X, all_Cs, all_reg_pars, return_REs)
-  Y_info = make_Y_validation(M, X, all_Cs, all_reg_pars, return_REs)
 
   if(!return_REs){
     M = M_info
-    Y = Y_info
   } else{
     M = M_info["M"]
-    Y = Y_info["Y"]
-
     REs_M = M_info["REs"]
+  }
+
+
+  Y_info = make_Y_validation(M, X, all_Cs, all_reg_pars, return_REs)
+
+  if(!return_REs){
+    Y = Y_info
+  } else{
+    Y = Y_info["Y"]
     REs_Y = Y_info["REs"]
   }
 
@@ -109,7 +126,8 @@ make_C_validation <- function(n){
 
 
 
-make_M_validation <- function(X, all_Cs, all_reg_pars){
+# I added the argument but haven't modified the function yet for returning REs !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+make_M_validation <- function(X, all_Cs, all_reg_pars, return_REs = FALSE){
   beta_M = all_reg_pars$beta_M    # Coefficient vector for fixed effects
   Gamma_M = all_reg_pars$Gamma_M  # Covariance matrix of random effects
 
@@ -128,7 +146,8 @@ make_M_validation <- function(X, all_Cs, all_reg_pars){
   return(M)
 }
 
-make_Y_validation <- function(M, X, all_Cs, all_reg_pars){
+# I added the argument but haven't modified the function yet for returning REs !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+make_Y_validation <- function(M, X, all_Cs, all_reg_pars, return_REs = FALSE){
   beta_Y = all_reg_pars$beta_Y    # Coefficient vector for fixed effects
   Gamma_Y = all_reg_pars$Gamma_Y  # Covariance matrix of random effects
 

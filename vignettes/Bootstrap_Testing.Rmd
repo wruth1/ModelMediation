@@ -1,0 +1,94 @@
+---
+title: "Bootstrap Testing"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Bootstrap_Testing}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(ModelMediation)
+```
+
+\newcommand{\simiid}{\overset{iid}{\sim}}
+\newcommand{\bR}{\mathbb{R}}
+\newcommand{\bE}{\mathbb{E}}
+
+In this vignette, we develop a unit test for the bootstrap on our validation dataset. 
+
+# Data Generating Mechanism
+
+Recall that this dataset is constructed as follows:
+
+0. Initialize parameters
+  + $K$: Number of groups
+  + $n$: Number of observations per group
+  + $r$: Number of confounders
+  + $\beta_Y \in \bR^{3+r}$, $\beta_M \in \bR^{2+r}$: Fixed effects for the outcome and mediator models
+  + $\Gamma_Y \in \bR^{3 \times 3}$, $\Gamma_M \in \bR^{2 \times 2}$: Covariances of random effects for the outcome and mediator models
+  
+For each group $k = 1, \ldots, K$:
+
+1. Simulate random effects $U_{Y,k} \overset{iid}{\sim} N(0, \Gamma_Y)$ and $U_{M,k} \overset{iid}{\sim} N(0, \Gamma_M)$
+2. Simulate fixed covariates: $X_{k,i}, C^{(1)}_{k,i}, \ldots, C^{(r)}_{k,i} \overset{iid}{\sim} \mathrm{Bernoulli}(0.5)$
+3. Compute linear predictor for mediator: $\eta_{k,i} = \begin{bmatrix} 1 & X_{k,i} & C^{(1)}_{k,i} & \cdots &  C^{(r)}_{k,i} \end{bmatrix} \beta_M + \begin{bmatrix} 1 & X_{k,i} \end{bmatrix} U_{M,k}$
+4. Simulate mediator: $M_{k,i} \sim \mathrm{Bernoulli}(\mathrm{logit}^{-1}(\eta_{k,i}))$
+5. Compute linear predictor for outcome: $\zeta_{k,i} = \begin{bmatrix} 1 & M_{k,i}  & X_{k,i} & C^{(1)}_{k,i} & \cdots &  C^{(r)}_{k,i} \end{bmatrix} \beta_Y + \begin{bmatrix} 1 & M_{k,i} & X_{k,i} \end{bmatrix} U_{Y,k}$
+6. Simulate outcome: $Y_{k,i} \sim \mathrm{Bernoulli}(\mathrm{logit}^{-1}(\zeta_{k,i}))$
+
+We stress that for our real dataset this is only the assumed data generating mechanism, but for the validation dataset this assumption is true by construction.
+
+
+# Analysis
+
+The `ModelMediation` package does bootstrap-based uncertainty quantification for generalized linear mixed models using the above structure. That is, we estimate the sampling distribution of the data (either parametrically or non-parametrically), then use these samples to contruct bootstrap distributions for the group-specific mediation effects. Finally, we use these bootstrap distributions to construct confidence intervals and perform inference. 
+
+More formally, we have the following steps:
+
+## Non-Parametric Bootstrap
+
+For $b = 1, \ldots, B$:
+
+For $k = 1, \ldots, K$:
+
+1. Sample with replacement from group $k$ of the validation dataset to obtain a new sample of size $n$ from that group
+
+End For $k$
+
+2. Assemble the $K$ samples into a single dataset
+3. Fit the outcome model and mediator model to the assembled dataset
+4. Predict random effects for each group and compute corresponding mediation effects
+
+End For $b$
+
+
+## Parametric Bootstrap
+
+Generation of each parametric bootstrap sample proceeds identically to the assumed data generating mechanism, but with each $\beta$ and $\Gamma$ replaced by its estimate from the observed data, and the fixed covariates, $X$, $C^{(1)}, \ldots, C^{(r)}$, held fixed at their observed values. We denote the list of all $r$ confounders by $\mathscr{C}$. Next, we repeat this process $B$ times, fit the outcome/mediator models on each simulated dataset, and extract the group-wise mediation effects.
+
+
+
+# Toward a Unit Test
+
+I'm not sure what statistical behaviour to expect from my estimated mediation effects. As such, it's not clear how to write a unit test. What I propose to do instead is to just sum up all the values of $M$. We can think of this as an estimator for the marginal mean of $M$. However, we must be careful to respect the conditioning implicit in our bootstrap sampler. That is, in the parametric bootstrap, we hold $X$ and $\mathscr{C}$ fixed. It's less obvious to me what the non-parametric bootstrap is doing here. We're sampling with replacement from each group, but we're not holding the covariates fixed. This may lead to different behaviour from the parametric bootstrap. In fact, asymptotically, these two distributional estimators have different limits. The parametric estimate should converge to the conditional distribution of $M$ and $Y$ given $X$ and $\mathscr{C}$, while the non-parametric estimate should converge to the joint distribution of all these variables. 
+
+This observation helps explain why we're getting somewhat different results from the two bootstraps. I wonder what would happen if we non-parametrically re-sampled $X$ and $\mathscr{C}$ within each group, then parametrically sample $M$ and $Y$. I guess you could call this a semi-parametric bootstrap (although in linear mixed-effects models this refers to something specific). I would expect such a semi-parametric bootstrap to give results similar to that of the non-parametric bootstrap. 
+
+Returning now to the proposed statistic, let's start by looking at its behaviour under the parametric bootstrap. Within a particular country, write $\bar{M} = n^{-1} \sum M_i$, and $\varphi(X, \mathscr{C})$ for the inverse-logit of the linear predictor evaluated at $X$ and $\mathscr{C}$. Then
+
+$$
+\begin{aligned}
+\bE (\bar{M}|X, \mathscr{C}) &= \bE \left[ \left. n^{-1} \sum M_i \right| X, \mathscr{C} \right] \\
+&= n^{-1} \sum \varphi(X_i, \mathscr{C}_i)
+\end{aligned}
+$$
+
+Hence, sampling conditionally on $X$ and $\mathscr{C}$, the expected mean of $M$ within a group is the mean of $\varphi(X, \mathscr{C})$ within that group. Note that this expectation is taken over the residual variability in $M$ after conditioning on both $X$ and $\mathscr{C}$.

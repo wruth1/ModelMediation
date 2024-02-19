@@ -9,7 +9,7 @@ run_bootstrap(
   data = NULL,
   mod_Y = NULL,
   mod_M = NULL,
-  parametric = TRUE,
+  boot_type = c("par", "npar", "spar"),
   .parallel = FALSE,
   .verbose = TRUE
 )
@@ -23,7 +23,7 @@ run_bootstrap(
 
 \item{mod_M}{Regression model for predicting \code{M}. Recommended but optional for parametric (as long as \code{data} is supplied), not used for non-parametric.}
 
-\item{parametric}{Indicates whether to perform parametric or non-parametric bootstrap.}
+\item{boot_type}{Indicates which type of bootstrap should be performed. Options include parametric (\code{par}), non-parametric (\code{npar}), and semi-parametric (\code{spar}).}
 
 \item{.parallel}{Should the \code{B} analyses be performed in parallel?}
 
@@ -45,7 +45,7 @@ data = make_validation_data(n, K, all_reg_pars)
 mod_Y = fit_mod_Y(data)
 mod_M = fit_mod_M(data)
 
-run_bootstrap(B, mod_Y = mod_Y, mod_M = mod_M, parametric = TRUE, .parallel = FALSE)
+run_bootstrap(B, mod_Y = mod_Y, mod_M = mod_M, boot_type = "par", .parallel = FALSE)
 
-run_bootstrap(B, data = data, parametric = FALSE, .parallel = FALSE)
+run_bootstrap(B, data = data, boot_type = "npar", .parallel = FALSE)
 }

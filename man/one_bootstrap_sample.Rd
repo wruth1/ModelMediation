@@ -8,7 +8,7 @@ one_bootstrap_sample(
   data = NULL,
   mod_Y = NULL,
   mod_M = NULL,
-  parametric = TRUE,
+  boot_type = c("par", "npar", "spar"),
   .careful = TRUE
 )
 }
@@ -19,7 +19,7 @@ one_bootstrap_sample(
 
 \item{mod_M}{Regression model for predicting \code{M}. Recommended but optional for parametric (as long as \code{data} is supplied), not used for non-parametric.}
 
-\item{parametric}{Indicates whether to perform parametric or non-parametric bootstrap.}
+\item{boot_type}{Indicates which type of bootstrap should be performed. Options include parametric (\code{par}), non-parametric (\code{npar}), and semi-parametric (\code{spar}).}
 
 \item{.careful}{Should input be checked for whether enough information has been provided for the requested flavour of bootstrap? Recommended setting is \code{TRUE} if running interactively and \code{FALSE} if running inside another function which has already checked.}
 }
@@ -38,7 +38,7 @@ data = make_validation_data(n, K, all_reg_pars)
 mod_Y = fit_mod_Y(data)
 mod_M = fit_mod_M(data)
 
-one_bootstrap_sample(mod_Y = mod_Y, mod_M = mod_M, parametric = TRUE, .careful = TRUE)
+one_bootstrap_sample(mod_Y = mod_Y, mod_M = mod_M, boot_type = "par", .careful = TRUE)
 
-one_bootstrap_sample(data = data, parametric = FALSE, .careful = TRUE)
+one_bootstrap_sample(data = data, boot_type = "npar", .careful = TRUE)
 }

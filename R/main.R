@@ -26,17 +26,20 @@ run_analysis <- function(data, B, .parallel = FALSE, .verbose = FALSE){
   mod_Y = fit_mod_Y(data)
   mod_M = fit_mod_M(data)
 
-  boot_results_par = run_bootstrap(B, mod_Y = mod_Y, mod_M = mod_M, parametric = TRUE, .parallel = .parallel, .verbose = .verbose)
-  boot_results_npar = run_bootstrap(B, data = data, parametric = FALSE, .parallel = .parallel, .verbose = .verbose)
+  boot_results_par = run_bootstrap(B, mod_Y = mod_Y, mod_M = mod_M, boot_type = "par", .parallel = .parallel, .verbose = .verbose)
+  boot_results_spar = run_bootstrap(B, mod_Y = mod_Y, mod_M = mod_M, boot_type = "spar", .parallel = .parallel, .verbose = .verbose)
+  boot_results_npar = run_bootstrap(B, data = data, boot_type = "npar", .parallel = .parallel, .verbose = .verbose)
 
   boot_CIs_par = get_boot_CIs(boot_results_par, mod_Y=mod_Y, mod_M=mod_M)
+  boot_CIs_spar = get_boot_CIs(boot_results_spar, mod_Y=mod_Y, mod_M=mod_M)
   boot_CIs_npar = get_boot_CIs(boot_results_npar, mod_Y=mod_Y, mod_M=mod_M)
 
   boot_CIs_par$boot_type = "par"
+  boot_CIs_spar$boot_type = "spar"
   boot_CIs_npar$boot_type = "npar"
-  all_boot_CIs = rbind(boot_CIs_par, boot_CIs_npar)
+  all_boot_CIs = rbind(boot_CIs_par, boot_CIs_spar, boot_CIs_npar)
 
-  output = list(CIs = all_boot_CIs, boot_results_par = boot_results_par, boot_results_npar = boot_results_npar)
+  output = list(CIs = all_boot_CIs, boot_results_par = boot_results_par, boot_results_spar = boot_results_spar, boot_results_npar = boot_results_npar)
   return(all_boot_CIs)
 }
 

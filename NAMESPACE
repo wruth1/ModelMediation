@@ -3,6 +3,7 @@
 export("%>%")
 export(check_bootstrap_inputs)
 export(fit_mod_M)
+export(fit_mod_M_formal)
 export(fit_mod_Y)
 export(get_boot_CIs)
 export(get_lin_preds)

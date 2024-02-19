@@ -49,3 +49,41 @@ fit_mod_M <- function(data){
     lme4::glmer(M ~ X + C1 + C2 + (X | group), data = data, family = "binomial")
   )
 }
+
+
+
+
+###############################
+#### More general versions ####
+###############################
+
+# In this section, I make strong assumptions about the structure of the data frame which is passed to the fitting functions. I will refer to any data frame which must meet these assumptions as data_formal. The requirements are as follows:
+#   Must contain columns named Y, M, X and group
+#   May also contain other columns. Each such extra column must be a confounder.      !!!! I'm not sure yet whether I want to require that these columns be named C1, C2, ...
+
+
+#' Fit regression model for mediator (`M`) using a formal dataset
+#'
+#' @details
+#' I make strong assumptions about the structure of the data frame which is passed to this function. Such a structured data frame is referred to as `data_formal`. The requirements are as follows:
+#'
+#' - Must contain columns named Y, M, X and group
+#' - May also contain other columns. Each such extra column must be a confounder.      !!!! I'm not sure yet whether I want to require that these columns be named C1, C2, ...
+#'
+#' @param data_formal A formal data frame. See Details for requirements.
+#'
+#' @return A GLMM fit using `glmer` from the `lme4` package.
+#' @export
+#'
+#' @examples
+#' n = 20
+#' K = 3
+#' all_reg_pars = make_all_reg_pars()
+#' data_formal = make_validation_data(n, K, all_reg_pars)
+#'
+#' fit_mod_M_formal(data_formal)
+fit_mod_M_formal <- function(data_formal){
+  suppressMessages(
+    lme4::glmer(M ~ . - Y + (X | group), data = data_formal, family = "binomial")
+  )
+}

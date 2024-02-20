@@ -1,16 +1,4 @@
 
-#########################################################################################
-#### To Do: Finish modifying functions to facilitate the returning of random effects ####
-#########################################################################################
-
-
-
-
-
-
-
-
-
 
 #' Generate a dataset for validating methodology
 #'
@@ -46,8 +34,8 @@ make_validation_data <- function(n, K, all_reg_pars = NULL, output_list = FALSE,
   if(!return_REs){
     data_list = data_list_output
   } else{
-    data_list = data_list_output["data"]
-    all_REs = data_list_output["all_REs"]
+    data_list = data_list_output[["data"]]
+    all_REs = data_list_output[["all_REs"]]
   }
 
 
@@ -62,7 +50,7 @@ make_validation_data <- function(n, K, all_reg_pars = NULL, output_list = FALSE,
   if(!return_REs){
     return(data_output)
   } else{
-    return(list(data = data_output, REs = all_REs))
+    return(list(data = data_output, all_REs = all_REs))
   }
 }
 
@@ -75,7 +63,7 @@ make_validation_data_list <- function(n, K, all_reg_pars, return_REs = FALSE){
   } else{
     data_list = purrr::map(output_list, "data")
     RE_list = purrr::map(output_list, "REs")
-    return(list(data = data_list, REs = RE_list))
+    return(list(data = data_list, all_REs = RE_list))
   }
 }
 
@@ -89,11 +77,10 @@ make_one_group_validation <- function(n, all_reg_pars, return_REs = FALSE){
   if(!return_REs){
     M = M_info
   } else{
-    M = M_info["M"]
-    REs_M = M_info["REs"]
+    M = M_info[["M"]]
+    REs_M = M_info[["REs"]]
   }
 
-  if(!identical(M, M_info)) stop("In make_one_group_validation: M and M_info must be the same.")
 
 
   Y_info = make_Y_validation(M, X, all_Cs, all_reg_pars, return_REs)
@@ -101,8 +88,8 @@ make_one_group_validation <- function(n, all_reg_pars, return_REs = FALSE){
   if(!return_REs){
     Y = Y_info
   } else{
-    Y = Y_info["Y"]
-    REs_Y = Y_info["REs"]
+    Y = Y_info[["Y"]]
+    REs_Y = Y_info[["REs"]]
   }
 
   output_data = data.frame(Y=Y, M=M, X=X, all_Cs)
@@ -144,8 +131,8 @@ make_M_validation <- function(X, all_Cs, all_reg_pars, return_REs = FALSE){
   if(!return_REs){
     lin_preds = lin_pred_info
   } else{
-    lin_preds = lin_pred_info["lin_preds"]
-    REs = lin_pred_info["REs"]
+    lin_preds = lin_pred_info[["lin_preds"]]
+    REs = lin_pred_info[["REs"]]
   }
 
   all_probs = boot::inv.logit(lin_preds)
@@ -159,7 +146,6 @@ make_M_validation <- function(X, all_Cs, all_reg_pars, return_REs = FALSE){
   }
 }
 
-# I added the argument but haven't modified the function yet for returning REs !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 make_Y_validation <- function(M, X, all_Cs, all_reg_pars, return_REs = FALSE){
   beta_Y = all_reg_pars$beta_Y    # Coefficient vector for fixed effects
   Gamma_Y = all_reg_pars$Gamma_Y  # Covariance matrix of random effects
@@ -175,8 +161,8 @@ make_Y_validation <- function(M, X, all_Cs, all_reg_pars, return_REs = FALSE){
   if(!return_REs){
     lin_preds = lin_pred_info
   } else{
-    lin_preds = lin_pred_info["lin_preds"]
-    REs = lin_pred_info["REs"]
+    lin_preds = lin_pred_info[["lin_preds"]]
+    REs = lin_pred_info[["REs"]]
   }
 
   all_probs = boot::inv.logit(lin_preds)

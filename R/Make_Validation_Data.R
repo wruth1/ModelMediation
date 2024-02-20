@@ -93,6 +93,8 @@ make_one_group_validation <- function(n, all_reg_pars, return_REs = FALSE){
     REs_M = M_info["REs"]
   }
 
+  if(!identical(M, M_info)) stop("In make_one_group_validation: M and M_info must be the same.")
+
 
   Y_info = make_Y_validation(M, X, all_Cs, all_reg_pars, return_REs)
 
@@ -126,7 +128,6 @@ make_C_validation <- function(n){
 
 
 
-# I added the argument but haven't modified the function yet for returning REs !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 make_M_validation <- function(X, all_Cs, all_reg_pars, return_REs = FALSE){
   beta_M = all_reg_pars$beta_M    # Coefficient vector for fixed effects
   Gamma_M = all_reg_pars$Gamma_M  # Covariance matrix of random effects
@@ -139,11 +140,23 @@ make_M_validation <- function(X, all_Cs, all_reg_pars, return_REs = FALSE){
   data_ran = data.frame(X = X)
 
 
-  lin_preds = get_lin_preds(data_fix, data_ran, beta_M, Gamma_M, add_intercept = TRUE)
+  lin_pred_info = get_lin_preds(data_fix, data_ran, beta_M, Gamma_M, add_intercept = TRUE, return_REs = return_REs)
+  if(!return_REs){
+    lin_preds = lin_pred_info
+  } else{
+    lin_preds = lin_pred_info["lin_preds"]
+    REs = lin_pred_info["REs"]
+  }
+
   all_probs = boot::inv.logit(lin_preds)
 
   M = stats::rbinom(n, 1, all_probs)
-  return(M)
+
+  if(!return_REs){
+    return(M)
+  } else{
+    return(list(M = M, REs = REs))
+  }
 }
 
 # I added the argument but haven't modified the function yet for returning REs !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -158,11 +171,22 @@ make_Y_validation <- function(M, X, all_Cs, all_reg_pars, return_REs = FALSE){
   data_fix = data.frame(M = M, X = X, all_Cs)
   data_ran = data.frame(M = M, X = X)
 
-  lin_preds = get_lin_preds(data_fix, data_ran, beta_Y, Gamma_Y, add_intercept = TRUE)
+  lin_pred_info = get_lin_preds(data_fix, data_ran, beta_Y, Gamma_Y, add_intercept = TRUE, return_REs = return_REs)
+  if(!return_REs){
+    lin_preds = lin_pred_info
+  } else{
+    lin_preds = lin_pred_info["lin_preds"]
+    REs = lin_pred_info["REs"]
+  }
+
   all_probs = boot::inv.logit(lin_preds)
 
   Y = stats::rbinom(n, 1, all_probs)
 
-  return(stats::rbinom(n, 1, 0.5))
+  if(!return_REs){
+    return(Y)
+  } else{
+    return(list(Y = Y, REs = REs))
+  }
 }
 

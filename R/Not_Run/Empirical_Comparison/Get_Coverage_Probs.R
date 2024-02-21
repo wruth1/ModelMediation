@@ -56,3 +56,9 @@ pct_cover_by_group = cover_by_var("group", pct_cover_rates)
 pct_cover_by_med_type = cover_by_var("med_type", pct_cover_rates)
 pct_cover_by_boot_type = cover_by_var("boot_type", pct_cover_rates)
 
+pct_par_cover_rates = dplyr::filter(pct_cover_rates, boot_type != "npar")
+
+
+pct_par_cover_global = mean(pct_par_cover_rates$cover_rate)
+pct_par_cover_by_group = cover_by_var("group", pct_par_cover_rates)
+pct_par_cover_by_med_type = cover_by_var("med_type", pct_par_cover_rates)

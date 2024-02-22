@@ -58,14 +58,19 @@ one_parametric_resample <- function(mod_Y, mod_M){
   warning("Using @frame to access the data may break when interactions are included.")
 
   # Extract relevant parameters
-  all_reg_pars = all_reg_pars_from_lme4(mod_Y, mod_M)
+  this_reg_pars = all_reg_pars_from_lme4(mod_Y, mod_M)
 
   # Split data by group
-  data_list = split(data, data$group)
+  all_groups = unique(data$group)
+  data_list = list()
+  for(i in seq_along(all_groups)){
+    data_list[[i]] = dplyr::filter(data, group == all_groups[i])
+  }
+  # data_list = split(data, data$group) # The split function re-arranges the groups in alphabetical order. I don't want this.
 
   # Overwrite M and Y within each group
-  for(k in seq_along(data_list)){
-    data_list[[k]] %<>% replace_M(all_reg_pars) %>%
+  for(i in seq_along(all_groups)){
+    data_list[[i]] %<>% replace_M(all_reg_pars) %>%
       replace_Y(all_reg_pars)
   }
 

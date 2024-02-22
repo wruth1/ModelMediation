@@ -15,8 +15,8 @@
 #' @examples
 #' make_all_reg_pars()
 make_all_reg_pars <- function(beta_Y = c(1, -1.5, 1, -1.5, 1), Gamma_Y = diag(3), beta_M = c(-1, 1, -1, 1), Gamma_M = diag(2)){
-  names(beta_Y) = c("Int", "M", "X", "C1", "C2")
-  names(beta_M) = c("Int", "X", "C1", "C2")
+  names(beta_Y) = c("Int", "M", "X")
+  names(beta_M) = c("Int", "X")
   list(beta_Y = beta_Y, Gamma_Y = Gamma_Y, beta_M = beta_M, Gamma_M = Gamma_M)
 }
 

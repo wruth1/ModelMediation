@@ -97,7 +97,7 @@ make_one_group_validation <- function(n, all_reg_pars, return_REs = FALSE){
   if(!return_REs){
     return(output_data)
   } else{
-    return(list(data = output_data, REs = list(M = REs_M, Y = REs_Y)))
+    return(list(data = output_data, REs = list(M = REs_M, Y = REs_Y, data = output_data)))
   }
   return(output)
 }

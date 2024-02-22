@@ -17,10 +17,14 @@ real_data = dat.ma %>%
 real_data$Y = as.factor(real_data$Y)
 real_data$M = as.factor(real_data$M)
 
-real_data = real_data[c(1:100, 10000:10100),]
+real_data %<>% dplyr::group_by(group) %>%      # Split data into groups
+  dplyr::slice_sample(n = 20, replace = FALSE) %>% # Resample within each group
+  dplyr::ungroup() %>%                              # Remove grouping structure
+  data.frame()
 
-fit_mod_M_formal(real_data)
-fit_mod_Y_formal(real_data)
+
+mod_M = fit_mod_M_formal(real_data)
+mod_Y = fit_mod_Y_formal(real_data)
 
 
 library(foreach)
@@ -65,9 +69,9 @@ all_boot_results_parallel = foreach::foreach(i = seq_len(num_MC_reps), .options.
   # data = make_validation_data(n, K, all_reg_pars)
 
   # tictoc::tic()
-  this_boot_results = run_analysis(real_data, B, .verbose = FALSE, .parallel = FALSE)
+  # this_boot_results = run_analysis(real_data, B, .verbose = FALSE, .parallel = FALSE)
   # this_boot_results = run_analysis(data, B, .verbose = TRUE, .parallel = TRUE)
-  # this_boot_results = run_analysis(data, B, .verbose = TRUE, .parallel = FALSE)
+  this_boot_results = run_analysis(real_data, B, .verbose = TRUE, .parallel = FALSE)
   # tictoc::toc()
 
   # this_boot_results = run_analysis(data, B, .verbose = FALSE, .parallel = TRUE)

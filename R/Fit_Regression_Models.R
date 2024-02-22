@@ -88,7 +88,7 @@ fit_mod_M <- function(data){
 #' fit_mod_M_formal(data_formal)
 fit_mod_M_formal <- function(data_formal){
   suppressMessages(
-    lme4::glmer(M ~ . - Y - group + (X | group), data = data_formal, family = "binomial")
+    lme4::glmer(M ~ . - Y - group + (X| group), data = data_formal, family = "binomial")
   )
 }
 

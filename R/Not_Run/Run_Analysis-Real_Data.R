@@ -71,7 +71,7 @@ all_boot_results_parallel = foreach::foreach(i = seq_len(num_MC_reps), .options.
   # tictoc::tic()
   # this_boot_results = run_analysis(real_data, B, .verbose = FALSE, .parallel = FALSE)
   # this_boot_results = run_analysis(data, B, .verbose = TRUE, .parallel = TRUE)
-  this_boot_results = run_analysis(real_data, B, .verbose = TRUE, .parallel = FALSE)
+  this_boot_results = run_analysis_formal(real_data, B, .verbose = TRUE, .parallel = FALSE)
   # tictoc::toc()
 
   # this_boot_results = run_analysis(data, B, .verbose = FALSE, .parallel = TRUE)

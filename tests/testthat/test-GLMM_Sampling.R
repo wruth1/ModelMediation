@@ -13,10 +13,32 @@ valid_info = make_validation_data(n, K, all_reg_pars, return_REs = TRUE)
 data = valid_info[["data"]]
 REs = valid_info[["all_REs"]]
 
+# check_order = purrr::imap_lgl(valid_info, \(this_info, group_number){
+#   data1 = this_info[["data"]] %>% dplyr::filter(group == paste0("G", group_number))
+#   data2 = this_info[["REs"]][["data"]]
+#   return(identical(data1, data2))
+# })
+
+# data_by_group1 = split(data, data$group)
+# data_by_group2 = purrr::map(REs, "data")
+#
+# check_order = purrr::map2(data_by_group1, data_by_group2, \(this_group1, this_group2){
+#   this_group1 %<>% dplyr::select(-group)
+#   (identical(this_group1, this_group2))
+# })
+#
+# i=2
+# for(i in 1:10){
+#   this_group_name = paste0("G", i)
+#   q = data_by_group1[[this_group_name]] %>% dplyr::select(-group)
+#   w = data_by_group2[[i]]
+# }
+# q = data_by_group1[[i]] %>% dplyr::select(-group)
+# w = data_by_group2[[i]]
+
 
 # Separate data into groups ----
 data_by_group = split(data, data$group)
-
 
 
 # Construct mixed effects coefficient for each group ----
@@ -56,7 +78,9 @@ marginal_mean_M <- function(mix_effs){
 
 
 marginal_means_by_group = sapply(mix_effs_by_group, marginal_mean_M)# %>% sort()
-M_bar_by_group = sapply(data_by_group, function(this_group){
+group_names = paste0("G", 1:10)
+M_bar_by_group = sapply(group_names, function(this_group_name){
+  this_group = data_by_group[[this_group_name]]
   mean(this_group$M)
 })# %>% sort()
 
@@ -67,7 +91,7 @@ Z_stat_by_group = purrr::map2_dbl(marginal_means_by_group, M_bar_by_group, \(mar
 
 p_vals_by_group = 2*stats::pnorm(abs(Z_stat_by_group), lower.tail = FALSE)
 
-sum(p_vals_by_group < 0.05)
+# sum(p_vals_by_group < 0.05)
 
 test_that("No more than 1 group differs significantly from the theoretical mean of M",{
   expect_true(sum(p_vals_by_group < 0.05) <= 1)

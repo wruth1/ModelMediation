@@ -69,8 +69,8 @@ mix_coeffs_2_data <- function(mix_coeffs_Y, mix_coeffs_M){
   all_mix_coeffs = cbind(Y=mix_coeffs_Y, M=mix_coeffs_M)
   all_mix_coeffs$group = rownames(all_mix_coeffs)
 
-  X_eff_name = stringr::str_subset(names(fix_coeffs_Y), "X")
-  M_eff_name = stringr::str_subset(names(fix_coeffs_Y), "M")
+  X_eff_name = stringr::str_subset(names(mix_coeffs_Y), "X")
+  M_eff_name = stringr::str_subset(names(mix_coeffs_Y), "M")
 
   output = all_mix_coeffs %>%
     dplyr::rename(X_in_Y = paste0("Y.", X_eff_name), M_in_Y = paste0("Y.", M_eff_name), X_in_M = paste0("M.", X_eff_name)) %>%

@@ -58,7 +58,7 @@ one_parametric_resample <- function(mod_Y, mod_M){
   warning("Using @frame to access the data may break when interactions are included.")
 
   # Extract relevant parameters
-  this_reg_pars = all_reg_pars_from_lme4(mod_Y, mod_M)
+  all_reg_pars = all_reg_pars_from_lme4(mod_Y, mod_M)
 
   # Split data by group
   all_groups = unique(data$group)

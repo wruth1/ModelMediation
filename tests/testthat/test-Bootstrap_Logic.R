@@ -1,7 +1,7 @@
 
 
 B = 2
-n = 20
+n = 50
 K = 3
 all_reg_pars = make_all_reg_pars()
 data = make_validation_data(n, K, all_reg_pars)
@@ -57,3 +57,4 @@ test_that("Bootstrap iteration label is defined correctly.",{
   expect_equal(spar_boot, boot_labels)
   expect_equal(npar_boot, boot_labels)
 })
+

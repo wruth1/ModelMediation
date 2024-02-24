@@ -176,3 +176,42 @@ make_Y_validation <- function(M, X, all_Cs, all_reg_pars, return_REs = FALSE){
   }
 }
 
+
+
+# Generic simulators for GLMM response ----
+
+make_response_RE_cov <- function(data_fix, data_ran, beta_fix, Gamma){
+  lin_preds = get_lin_preds_RE_cov(data_fix, data_ran, beta_fix, Gamma)
+  all_probs = boot::inv.logit(lin_preds)
+  response = stats::rbinom(nrow(data_fix), 1, all_probs)
+  return(response)
+}
+
+
+make_response_RE_vec <- function(data_fix, data_ran, beta_fix, beta_ran){
+  lin_preds = get_lin_preds_RE_vec(data_fix, data_ran, beta_fix, beta_ran)
+  all_probs = boot::inv.logit(lin_preds)
+  response = stats::rbinom(nrow(data_fix), 1, all_probs)
+  return(response)
+}
+
+
+
+# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!    START HERE
+
+# data_fix = model.matrix(mod_M, type = "fixed")
+# data_ran = model.matrix(mod_M, type = "random") %>% as.matrix() %>% as.data.frame(check.names=T)
+# data_ran2 = model.matrix(mod_M, type = "randomListRaw")[[1]]
+#
+# data_ran_list = list()
+# all_groups = unique(data$group) %>% sort()
+# for(i in seq_along(all_groups)){
+#   group = all_groups[[i]]
+#
+#   group_data = data_ran[,colnames(data_ran) == group]   # This is a hacky solution, but we must resort to extreme measures when forced to work with sparse matrices
+#
+#   data_ran_list[[i]] = group_data
+# }
+#
+#
+# colnames(data_ran)[1] == colnames(data_ran)[2]

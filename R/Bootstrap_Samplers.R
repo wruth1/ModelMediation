@@ -66,11 +66,11 @@ one_parametric_resample <- function(mod_Y, mod_M){
   for(i in seq_along(all_groups)){
     data_list[[i]] = dplyr::filter(data, group == all_groups[i])
   }
-  # data_list = split(data, data$group) # The split function re-arranges the groups in alphabetical order. I don't want this.
 
   # Overwrite M and Y within each group
   for(i in seq_along(all_groups)){
-    data_list[[i]] %<>% replace_M(all_reg_pars) %>%
+    data_list[[i]] %<>%
+      replace_M(all_reg_pars) %>%
       replace_Y(all_reg_pars)
   }
 
@@ -128,6 +128,12 @@ replace_Y <- function(data, all_reg_pars){
 
 
 
+
+mat_fixef = model.matrix(mod_M, type = "fixed")
+mat_ranef = model.matrix(mod_M, type = "random")
+mat_ranef2 = model.matrix(mod_M, type = "randomListRaw")[[1]]
+
+coef(mod_M)[[1]]
 
 
 

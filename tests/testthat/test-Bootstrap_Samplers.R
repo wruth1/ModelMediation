@@ -1,7 +1,3 @@
-test_that("multiplication works", {
-  expect_equal(2 * 2, 4)
-})
-
 
 
 n = 20
@@ -31,7 +27,7 @@ test_that("Size of parametric sample is correct",{
 
 test_that("Grouping variable matches original data",{
   expect_equal(data_npar$group, data$group)
-  expect_equal(data_par$group, data$group)
+  expect_equal(as.character(data_par$group), data$group)
 })
 
 test_that("Every element of non-parametric sample is contained in original dataset (in correct group)",{

@@ -58,6 +58,8 @@ fit_mod_M <- function(data){
 ###############################
 
 
+# Caution: For now, I'm going to modify these functions to just fit the model I want to the observed data. Later I will need to change them back to address the formal data frame structure.
+
 
 # In this section, I make strong assumptions about the structure of the data frame which is passed to the fitting functions. I will refer to any data frame which must meet these assumptions as data_formal. The requirements are as follows:
 #   Must contain columns named Y, M, X and group
@@ -88,7 +90,11 @@ fit_mod_M <- function(data){
 #' fit_mod_M_formal(data_formal)
 fit_mod_M_formal <- function(data_formal){
   suppressMessages(
-    lme4::glmer(M ~ . - Y - group + (X| group), data = data_formal, family = "binomial")
+    if("q8.pcis_medium" %in% colnames(data_formal)){
+      lme4::glmer(M ~ . - Y - group + (X + q8.pcis_medium| group), data = data_formal, family = "binomial")
+    } else{
+      lme4::glmer(M ~ . - Y - group + (X | group), data = data_formal, family = "binomial")
+    }
   )
 }
 
@@ -116,7 +122,11 @@ fit_mod_M_formal <- function(data_formal){
 #' fit_mod_Y_formal(data_formal)
 fit_mod_Y_formal <- function(data_formal){
   suppressMessages(
-    lme4::glmer(Y ~ . - group + (M + X | group), data = data_formal, family = "binomial")
+    if("q8.pcis_medium" %in% colnames(data_formal)){
+      lme4::glmer(Y ~ . - group + (X + q8.pcis_medium | group), data = data_formal, family = "binomial")
+    } else{
+      lme4::glmer(Y ~ . - group + (X | group), data = data_formal, family = "binomial")
+    }
   )
 }
 

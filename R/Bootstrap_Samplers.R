@@ -54,37 +54,136 @@ one_non_parametric_sample <- function(data){
 #'
 #' one_parametric_resample(mod_Y, mod_M)
 one_parametric_resample <- function(mod_Y, mod_M){
-  data = mod_Y@frame
-  warning("Using @frame to access the data may break when interactions are included.")
+  # Start with M ----
 
-  # Extract relevant parameters
-  all_reg_pars = all_reg_pars_from_lme4(mod_Y, mod_M)
+  ## Compute contribution to the linear predictor of the fixed and random effects separately ----
 
-  # Split data by group
-  all_groups = unique(data$group)
-  data_list = list()
-  for(i in seq_along(all_groups)){
-    data_list[[i]] = dplyr::filter(data, group == all_groups[i])
+  data_fix_M = model.matrix(mod_M, type = "fixed")
+  data_ran_M = model.matrix(mod_M, type = "random") %>% as.matrix() %>% as.data.frame()
+
+
+  ## Fixed ----
+  fixed_contrib_M = data_fix_M %*% lme4::fixef(mod_M)
+
+
+  ## Random ----
+  ran_coef_mat_M = lme4::ranef(mod_M)[[1]]
+
+  all_ran_coefs_M = c()
+  for (i in 1:nrow(ran_coef_mat_M)) {
+    all_ran_coefs_M = c(all_ran_coefs_M, as.numeric(ran_coef_mat_M[i, ]))
   }
 
-  # Overwrite M and Y within each group
-  for(i in seq_along(all_groups)){
-    data_list[[i]] %<>%
-      replace_M(all_reg_pars) %>%
-      replace_Y(all_reg_pars)
+  ran_contrib_M = as.matrix(data_ran_M) %*% all_ran_coefs_M
+
+
+  ## Simulate new M ----
+  lin_preds_M = fixed_contrib_M + ran_contrib_M
+  probs_M = boot::inv.logit(lin_preds_M)
+  new_M = stats::rbinom(nrow(data_fix_M), 1, probs_M)
+
+
+  # Now onto Y ----
+  data_fix_Y = model.matrix(mod_Y, type = "fixed")
+  data_ran_Y = model.matrix(mod_Y, type = "random") %>% as.matrix() %>% as.data.frame(check.names = T)
+
+
+  ## Inject simulated M into the data for Y ----
+
+  ### Fixed-effects data ----
+  if("M1" %in% colnames(data_fix_Y)){
+    data_fix_Y[, "M1"] = new_M
+  } else if("M" %in% colnames(data_fix_Y)){
+    data_fix_Y[, "M"] = new_M
   }
 
-  # Re-combine groups into a single data.frame
-  data_new = purrr::list_rbind(data_list)
+  lme4::getME(mod_M, "flist")
 
-  # Convert all factors into character variables
-  ## In particular, the `group` variable
-  data_new %<>% dplyr::mutate_if(is.factor, as.character)
+  ### Random effects data ----
+  all_group_labels = lme4::getME(mod_M, "flist")[[1]] %>% as.character()
+  all_groups = sort(unique(all_group_labels))
+  new_M_by_group = split(new_M, all_group_labels)
+  q = ncol(data_ran_Y) / length(all_groups)
+  n = nrow(data_ran_Y) / length(all_groups)
+
+  for (i in 1:length(all_groups)) {
+    col_ind = q * (i-1) + 2
+    row_start = n * (i-1) + 1
+    row_end = n * i
+
+    this_group = all_groups[i]
+    this_M = new_M_by_group[[this_group]]
+
+    data_ran_Y[row_start:row_end, col_ind] = this_M
+  }
+
+
+  ## Compute contributions to the linear predictor ----
+
+  fixed_contrib_Y = data_fix_Y %*% lme4::fixef(mod_Y)
+
+
+  ran_coef_mat_Y = lme4::ranef(mod_Y)[[1]]
+
+  all_ran_coefs_Y = c()
+  for (i in 1:nrow(ran_coef_mat_Y)) {
+    all_ran_coefs_Y = c(all_ran_coefs_Y, as.numeric(ran_coef_mat_Y[i, ]))
+  }
+
+  ran_contrib_Y = as.matrix(data_ran_Y) %*% all_ran_coefs_Y
+
+
+
+  ## Simulate new Y ----
+  lin_preds_Y = fixed_contrib_Y + ran_contrib_Y
+  probs_Y = boot::inv.logit(lin_preds_Y)
+  new_Y = stats::rbinom(nrow(data_fix_Y), 1, probs_Y)
+
+
+
+  # Construct and return new dataset ----
+  data_new = model.frame(mod_Y)
+  data_new$Y = new_Y
+  data_new$M = new_M
   return(data_new)
 }
 
 
+# one_parametric_resample_old <- function(mod_Y, mod_M){
+#   data = mod_Y@frame
+#   warning("Using @frame to access the data may break when interactions are included.")
+#
+#   # Extract relevant parameters
+#   all_reg_pars = all_reg_pars_from_lme4(mod_Y, mod_M)
+#
+#   # Split data by group
+#   all_groups = unique(data$group)
+#   data_list = list()
+#   for(i in seq_along(all_groups)){
+#     data_list[[i]] = dplyr::filter(data, group == all_groups[i])
+#   }
+#
+#   # Overwrite M and Y within each group
+#   for(i in seq_along(all_groups)){
+#     data_list[[i]] %<>%
+#       replace_M(all_reg_pars) %>%
+#       replace_Y(all_reg_pars)
+#   }
+#
+#   # Re-combine groups into a single data.frame
+#   data_new = purrr::list_rbind(data_list)
+#
+#   # Convert all factors into character variables
+#   ## In particular, the `group` variable
+#   data_new %<>% dplyr::mutate_if(is.factor, as.character)
+#   return(data_new)
+# }
+
+
+# Note: This is very specific to my problem. In general, I don't know the indices for subsetting Lambda (although I may be able to infer them)
 all_reg_pars_from_lme4 <- function(mod_Y, mod_M){
+  warning("This function is very specific to the validation dataset! Use caution.
+          ")
   beta_Y = lme4::fixef(mod_Y)
   beta_M = lme4::fixef(mod_M)
 
@@ -129,14 +228,6 @@ replace_Y <- function(data, all_reg_pars){
 
 
 
-mat_fixef = model.matrix(mod_M, type = "fixed")
-mat_ranef = model.matrix(mod_M, type = "random")
-mat_ranef2 = model.matrix(mod_M, type = "randomListRaw")[[1]]
-
-coef(mod_M)[[1]]
-
-
-
 # Semi-Parametric ----
 
 
@@ -160,28 +251,131 @@ coef(mod_M)[[1]]
 #' one_semi_parametric_resample(mod_Y, mod_M)
 one_semi_parametric_resample <- function(mod_Y, mod_M){
 
-  # First, non-parametrically resample X and C (by resampling the entire dataset) ----
-  data_obs = mod_Y@frame
-  warning("Using @frame to access the data may break when interactions are included.")
-  data = one_non_parametric_sample(data_obs)
 
-  # Extract relevant parameters
-  all_reg_pars = all_reg_pars_from_lme4(mod_Y, mod_M)
+  # First, generate indices for bootstrap sample from each group ----
+  data_obs = model.frame(mod_Y)
+  group_labels = data_obs$group
 
-  # Split data by group
-  data_list = split(data, data$group)
+  all_groups = sort(unique(group_labels))
+  num_groups = length(all_groups)
 
-  # Overwrite M and Y within each group
-  for(k in seq_along(data_list)){
-    data_list[[k]] %<>% replace_M(all_reg_pars) %>%
-      replace_Y(all_reg_pars)
+  n = nrow(data_obs) / num_groups
+  q = ncol(data_obs)
+
+  boot_inds = c()
+  for(i in seq_along(all_groups)){
+    group_start = n * (i-1) + 1
+    group_end = n * i
+    this_boot_inds = sample(group_start:group_end, replace = TRUE)
+
+    boot_inds = c(boot_inds, this_boot_inds)
   }
 
-  # Re-combine groups into a single data.frame
-  data_new = purrr::list_rbind(data_list)
 
-  # Convert all factors into character variables
-  ## In particular, the `group` variable
-  data_new %<>% dplyr::mutate_if(is.factor, as.character)
+
+
+
+
+
+  # Start with M ----
+
+  ## Compute contribution to the linear predictor of the fixed and random effects separately ----
+
+  data_fix_M = model.matrix(mod_M, type = "fixed")
+  data_ran_M = model.matrix(mod_M, type = "random") %>% as.matrix() %>% as.data.frame()
+
+  ## Bootstrap resample covariates ----
+  data_fix_M = data_fix_M[boot_inds, ]
+  data_ran_M = data_ran_M[boot_inds, ]
+
+  ## Fixed ----
+  fixed_contrib_M = data_fix_M %*% lme4::fixef(mod_M)
+
+
+  ## Random ----
+  ran_coef_mat_M = lme4::ranef(mod_M)[[1]]
+
+  all_ran_coefs_M = c()
+  for (i in 1:nrow(ran_coef_mat_M)) {
+    all_ran_coefs_M = c(all_ran_coefs_M, as.numeric(ran_coef_mat_M[i, ]))
+  }
+
+  ran_contrib_M = as.matrix(data_ran_M) %*% all_ran_coefs_M
+
+
+  ## Simulate new M ----
+  lin_preds_M = fixed_contrib_M + ran_contrib_M
+  probs_M = boot::inv.logit(lin_preds_M)
+  new_M = stats::rbinom(nrow(data_fix_M), 1, probs_M)
+
+
+  # Now onto Y ----
+  data_fix_Y = model.matrix(mod_Y, type = "fixed")
+  data_ran_Y = model.matrix(mod_Y, type = "random") %>% as.matrix() %>% as.data.frame(check.names = T)
+
+  ## Bootstrap resample covariates ----
+  ## Note: We're using the same indices as above, so our resampled covariates will match those used for M.
+  ## Note also: We're going to over-write M with our simulated values, so no need to worry about resampling M here.
+  data_fix_Y = data_fix_Y[boot_inds, ]
+  data_ran_Y = data_ran_Y[boot_inds, ]
+
+
+  ## Inject simulated M into the data for Y ----
+
+  ### Fixed-effects data ----
+  if("M1" %in% colnames(data_fix_Y)){
+    data_fix_Y[, "M1"] = new_M
+  } else if("M" %in% colnames(data_fix_Y)){
+    data_fix_Y[, "M"] = new_M
+  }
+
+  lme4::getME(mod_M, "flist")
+
+  ### Random effects data ----
+  all_group_labels = lme4::getME(mod_M, "flist")[[1]] %>% as.character()
+  all_groups = sort(unique(all_group_labels))
+  new_M_by_group = split(new_M, all_group_labels)
+  q = ncol(data_ran_Y) / length(all_groups)
+  n = nrow(data_ran_Y) / length(all_groups)
+
+  for (i in 1:length(all_groups)) {
+    col_ind = q * (i-1) + 2
+    row_start = n * (i-1) + 1
+    row_end = n * i
+
+    this_group = all_groups[i]
+    this_M = new_M_by_group[[this_group]]
+
+    data_ran_Y[row_start:row_end, col_ind] = this_M
+  }
+
+
+  ## Compute contributions to the linear predictor ----
+
+  fixed_contrib_Y = data_fix_Y %*% lme4::fixef(mod_Y)
+
+
+  ran_coef_mat_Y = lme4::ranef(mod_Y)[[1]]
+
+  all_ran_coefs_Y = c()
+  for (i in 1:nrow(ran_coef_mat_Y)) {
+    all_ran_coefs_Y = c(all_ran_coefs_Y, as.numeric(ran_coef_mat_Y[i, ]))
+  }
+
+  ran_contrib_Y = as.matrix(data_ran_Y) %*% all_ran_coefs_Y
+
+
+
+  ## Simulate new Y ----
+  lin_preds_Y = fixed_contrib_Y + ran_contrib_Y
+  probs_Y = boot::inv.logit(lin_preds_Y)
+  new_Y = stats::rbinom(nrow(data_fix_Y), 1, probs_Y)
+
+
+
+  # Construct and return new dataset ----
+  data_new = model.frame(mod_Y)
+  data_new$Y = new_Y
+  data_new$M = new_M
   return(data_new)
 }

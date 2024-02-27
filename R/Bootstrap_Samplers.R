@@ -97,13 +97,13 @@ one_parametric_resample <- function(mod_Y, mod_M){
     data_fix_Y[, "M"] = new_M
   }
 
-  lme4::getME(mod_M, "flist")
 
   ### Random effects data ----
-  all_group_labels = lme4::getME(mod_M, "flist")[[1]] %>% as.character()
-  all_groups = sort(unique(all_group_labels))
+  all_group_labels = lme4::getME(mod_M, "flist")[[1]]
+  all_groups = sort(unique(all_group_labels)) %>% as.character()
   new_M_by_group = split(new_M, all_group_labels)
   q = ncol(data_ran_Y) / length(all_groups)
+  group_sizes = sapply(new_M_by_group, length)
   n = nrow(data_ran_Y) / length(all_groups)
 
   for (i in 1:length(all_groups)) {

@@ -123,9 +123,9 @@ fit_mod_M_formal <- function(data_formal){
 fit_mod_Y_formal <- function(data_formal){
   suppressMessages(
     if("q8.pcis_medium" %in% colnames(data_formal)){
-      lme4::glmer(Y ~ . - group + (X + q8.pcis_medium | group), data = data_formal, family = "binomial")
+      lme4::glmer(Y ~ . - group + (M+ X + q8.pcis_medium | group), data = data_formal, family = "binomial")
     } else{
-      lme4::glmer(Y ~ . - group + (X | group), data = data_formal, family = "binomial")
+      lme4::glmer(Y ~ . - group + (M + X | group), data = data_formal, family = "binomial")
     }
   )
 }

@@ -1,5 +1,5 @@
 
-B = 3
+B = 200
 
 # Import and process data ----
 
@@ -24,9 +24,13 @@ real_data$M = as.factor(real_data$M)
 #   dplyr::ungroup() %>%                              # Remove grouping structure
 #   data.frame()
 
-
+tictoc::tic()
 mod_M = fit_mod_M_formal(real_data)
+tictoc::toc()
+
+tictoc::tic()
 mod_Y = fit_mod_Y_formal(real_data)
+tictoc::toc()
 
 
 library(foreach)
@@ -79,3 +83,4 @@ parallel::stopCluster(my_cluster)
 
 
 # Construct confidence intervals from each sample ----
+

@@ -81,7 +81,7 @@ run_analysis_formal <- function(data_formal, B, .parallel = FALSE, .verbose = FA
 #' Generate and return a single bootstrap sample of each flavour. Data must be formatted as a formal data frame.
 #'
 #' @param data_formal Observed dataset, structured as a formal data frame
-#' @param B Number of bootstrap replicates.
+#' @param mod_Y,mod_M Pre-fit models for the outcome and mediator, respectively. If NULL, these models will be fit inside the function.
 #' @param .parallel Should bootstrapping be performed in parallel?
 #' @param .verbose Should progress bars be produced for the two bootstrap analyses?
 #'
@@ -90,9 +90,13 @@ run_analysis_formal <- function(data_formal, B, .parallel = FALSE, .verbose = FA
 #'
 #' @examples
 #' 1+1
-run_analysis_one_bootstrap <- function(data_formal, .parallel = FALSE, .verbose = FALSE){
-  mod_Y = fit_mod_Y_formal(data_formal)
-  mod_M = fit_mod_M_formal(data_formal)
+run_analysis_one_bootstrap <- function(data_formal, mod_Y=NULL, mod_M=NULL, .parallel = FALSE, .verbose = FALSE){
+  if(is.null(mod_Y)){
+    mod_Y = fit_mod_Y_formal(data_formal)
+  }
+  if(is.null(mod_M)){
+    mod_M = fit_mod_M_formal(data_formal)
+  }
 
   boot_results_par = run_bootstrap(1, mod_Y = mod_Y, mod_M = mod_M, boot_type = "par", .parallel = .parallel, .verbose = .verbose)
   boot_results_spar = run_bootstrap(1, mod_Y = mod_Y, mod_M = mod_M, boot_type = "spar", .parallel = .parallel, .verbose = .verbose)

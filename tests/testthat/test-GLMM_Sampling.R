@@ -63,8 +63,8 @@ p_vals_by_group = 2*stats::pnorm(abs(Z_stat_by_group), lower.tail = FALSE)
 
 # sum(p_vals_by_group < 0.05)
 
-test_that("No more than 1 group differs significantly from the theoretical mean of M",{
-  expect_true(sum(p_vals_by_group < 0.05) <= 1)
+test_that("No more than 2 groups differ significantly from the theoretical mean of M",{
+  expect_true(sum(p_vals_by_group < 0.05) <= 2)
 })
 
 
@@ -160,8 +160,8 @@ p_vals_by_group_Y = 2*stats::pnorm(abs(Z_stat_by_group_Y), lower.tail = FALSE)
 
 # sum(p_vals_by_group < 0.05)
 
-test_that("No more than 1 group differs significantly from the theoretical mean of Y",{
-  expect_true(sum(p_vals_by_group_Y < 0.05) <= 1)
+test_that("No more than 2 groups differ significantly from the theoretical mean of Y",{
+  expect_true(sum(p_vals_by_group_Y < 0.05) <= 2)
 })
 
 

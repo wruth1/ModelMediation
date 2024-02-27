@@ -32,6 +32,8 @@ tictoc::tic()
 mod_Y = fit_mod_Y_formal(real_data)
 tictoc::toc()
 
+# save(mod_Y, mod_M, file = "Data/Fitted_Models-Real_Data.RData")
+load(file = "Data/Fitted_Models-Real_Data.RData")
 
 library(foreach)
 

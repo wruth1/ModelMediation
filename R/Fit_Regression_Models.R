@@ -178,6 +178,7 @@ recode_groups <- function(data_renamed){
 #' - Must contain columns named Y, M, X and group
 #' - May also contain other columns. Each such extra column must be a confounder.      !!!! I'm not sure yet whether I want to require that these columns be named C1, C2, ...
 #' - Groups must be labelled G1, G2, ...
+#' - Must be sorted by group label
 #'
 #' @param data A data frame containing the outcome, mediator, exposure and group variables. May also contain other columns, which are assumed to be confounders.
 #' @param Y_name Name of the outcome variable in `data`. This column name will be converted to `Y`.
@@ -205,6 +206,8 @@ make_data_formal <- function(data, Y_name = NULL, M_name = NULL, X_name = NULL, 
   data_renamed = rename_all_vars(data, Y_name, M_name, X_name, group_name)
 
   data_formal = recode_groups(data_renamed)
+
+  data_formal %<>% dplyr::arrange(group)
 
   return(data_formal)
 }

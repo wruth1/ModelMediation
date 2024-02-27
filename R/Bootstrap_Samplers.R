@@ -69,11 +69,12 @@ one_parametric_resample <- function(mod_Y, mod_M){
   ## Random ----
   ran_coef_mat_M = lme4::ranef(mod_M)[[1]]
 
-  all_ran_coefs_M = c()
-  for (i in 1:nrow(ran_coef_mat_M)) {
-    all_ran_coefs_M = c(all_ran_coefs_M, as.numeric(ran_coef_mat_M[i, ]))
-  }
+  ### Simulate new random effects ----
+  SD_mat_M = lme4::getME(mod_M, "Lambda")
+  cov_mat_M = SD_mat_M %*% Matrix::t(SD_mat_M)
+  all_ran_coefs_M = MASS::mvrnorm(n = 1, mu = rep(0, ncol(cov_mat_M)), Sigma = cov_mat_M)
 
+  ### Random effects' contribution ----
   ran_contrib_M = as.matrix(data_ran_M) %*% all_ran_coefs_M
 
 
@@ -82,10 +83,15 @@ one_parametric_resample <- function(mod_Y, mod_M){
   probs_M = boot::inv.logit(lin_preds_M)
   new_M = stats::rbinom(nrow(data_fix_M), 1, probs_M)
 
+  ## Match simulated Ms with group labels ----
+  all_group_labels = lme4::getME(mod_M, "flist")[[1]]
+  info_M = data.frame(value = new_M, group = all_group_labels)
+
+
 
   # Now onto Y ----
   data_fix_Y = model.matrix(mod_Y, type = "fixed")
-  data_ran_Y = model.matrix(mod_Y, type = "random") %>% as.matrix() %>% as.data.frame(check.names = T)
+  data_ran_Y = model.matrix(mod_Y, type = "random") %>% as.matrix() %>% as.data.frame()
 
 
   ## Inject simulated M into the data for Y ----
@@ -99,17 +105,19 @@ one_parametric_resample <- function(mod_Y, mod_M){
 
 
   ### Random effects data ----
-  all_group_labels = lme4::getME(mod_M, "flist")[[1]]
   all_groups = sort(unique(all_group_labels)) %>% as.character()
-  new_M_by_group = split(new_M, all_group_labels)
+  new_M_by_group = split(info_M$value, info_M$group)
   q = ncol(data_ran_Y) / length(all_groups)
   group_sizes = sapply(new_M_by_group, length)
-  n = nrow(data_ran_Y) / length(all_groups)
+  cumul_group_sizes = c(0, cumsum(group_sizes)) # Add an extra zero at the beginning for easier indexing later
+
+  # n = nrow(data_ran_Y) / length(all_groups)
 
   for (i in 1:length(all_groups)) {
     col_ind = q * (i-1) + 2
-    row_start = n * (i-1) + 1
-    row_end = n * i
+
+    row_start = cumul_group_sizes[i] + 1
+    row_end = cumul_group_sizes[i+1]
 
     this_group = all_groups[i]
     this_M = new_M_by_group[[this_group]]
@@ -120,16 +128,17 @@ one_parametric_resample <- function(mod_Y, mod_M){
 
   ## Compute contributions to the linear predictor ----
 
+  ### Fixed effects ----
   fixed_contrib_Y = data_fix_Y %*% lme4::fixef(mod_Y)
 
+  ### Random effects ----
 
-  ran_coef_mat_Y = lme4::ranef(mod_Y)[[1]]
+  #### Simulate new random effects ----
+  SD_mat_Y = lme4::getME(mod_Y, "Lambda")
+  cov_mat_Y = SD_mat_Y %*% Matrix::t(SD_mat_Y)
+  all_ran_coefs_Y = MASS::mvrnorm(n = 1, mu = rep(0, ncol(cov_mat_Y)), Sigma = cov_mat_Y)
 
-  all_ran_coefs_Y = c()
-  for (i in 1:nrow(ran_coef_mat_Y)) {
-    all_ran_coefs_Y = c(all_ran_coefs_Y, as.numeric(ran_coef_mat_Y[i, ]))
-  }
-
+  #### Random effects' contribution ----
   ran_contrib_Y = as.matrix(data_ran_Y) %*% all_ran_coefs_Y
 
 
@@ -139,92 +148,22 @@ one_parametric_resample <- function(mod_Y, mod_M){
   probs_Y = boot::inv.logit(lin_preds_Y)
   new_Y = stats::rbinom(nrow(data_fix_Y), 1, probs_Y)
 
+  ## Match simulated Ys with group labels ----
+  all_group_labels_Y = lme4::getME(mod_Y, "flist")[[1]]
+  info_Y = data.frame(value = new_Y, group = all_group_labels_Y)
+
 
 
   # Construct and return new dataset ----
   data_new = model.frame(mod_Y)
-  data_new$Y = new_Y
-  data_new$M = new_M
+
+  ## One group at a time, for robustness ----
+  for(group in all_groups){
+    data_new[data_new$group == group, "M"] = info_M$value[info_M$group == group]
+    data_new[data_new$group == group, "Y"] = info_Y$value[info_Y$group == group]
+  }
   return(data_new)
 }
-
-
-# one_parametric_resample_old <- function(mod_Y, mod_M){
-#   data = mod_Y@frame
-#   warning("Using @frame to access the data may break when interactions are included.")
-#
-#   # Extract relevant parameters
-#   all_reg_pars = all_reg_pars_from_lme4(mod_Y, mod_M)
-#
-#   # Split data by group
-#   all_groups = unique(data$group)
-#   data_list = list()
-#   for(i in seq_along(all_groups)){
-#     data_list[[i]] = dplyr::filter(data, group == all_groups[i])
-#   }
-#
-#   # Overwrite M and Y within each group
-#   for(i in seq_along(all_groups)){
-#     data_list[[i]] %<>%
-#       replace_M(all_reg_pars) %>%
-#       replace_Y(all_reg_pars)
-#   }
-#
-#   # Re-combine groups into a single data.frame
-#   data_new = purrr::list_rbind(data_list)
-#
-#   # Convert all factors into character variables
-#   ## In particular, the `group` variable
-#   data_new %<>% dplyr::mutate_if(is.factor, as.character)
-#   return(data_new)
-# }
-
-
-# Note: This is very specific to my problem. In general, I don't know the indices for subsetting Lambda (although I may be able to infer them)
-all_reg_pars_from_lme4 <- function(mod_Y, mod_M){
-  warning("This function is very specific to the validation dataset! Use caution.
-          ")
-  beta_Y = lme4::fixef(mod_Y)
-  beta_M = lme4::fixef(mod_M)
-
-  sqrt_Gamma_Y = as.matrix(lme4::getME(mod_Y, "Lambda")[1:3, 1:3])
-  sqrt_Gamma_M = as.matrix(lme4::getME(mod_M, "Lambda")[1:2, 1:2])
-
-  Gamma_Y = sqrt_Gamma_Y %*% t(sqrt_Gamma_Y)
-  Gamma_M = sqrt_Gamma_M %*% t(sqrt_Gamma_M)
-
-  make_all_reg_pars(beta_Y, Gamma_Y, beta_M, Gamma_M)
-}
-
-
-replace_M <- function(data, all_reg_pars){
-  # Extract relevant variables
-  X = data$X
-  all_Cs = dplyr::select(data, -Y, -M, -X, -group)
-
-  # Generate M
-  new_M = make_M_validation(X, all_Cs, all_reg_pars)
-
-  # Overwrite old M
-  data$M = new_M
-  return(data)
-}
-
-
-replace_Y <- function(data, all_reg_pars){
-  # Extract relevant variables
-  M = data$M
-  X = data$X
-  all_Cs = dplyr::select(data, -Y, -M, -X, -group)
-
-  # Generate Y
-  new_Y = make_Y_validation(M, X, all_Cs, all_reg_pars)
-
-  # Overwrite old Y
-  data$Y = new_Y
-  return(data)
-}
-
 
 
 
@@ -251,30 +190,22 @@ replace_Y <- function(data, all_reg_pars){
 #' one_semi_parametric_resample(mod_Y, mod_M)
 one_semi_parametric_resample <- function(mod_Y, mod_M){
 
-
   # First, generate indices for bootstrap sample from each group ----
-  data_obs = model.frame(mod_Y)
+  data_obs = model.frame(mod_M)
   group_labels = data_obs$group
-
   all_groups = sort(unique(group_labels))
-  num_groups = length(all_groups)
 
-  n = nrow(data_obs) / num_groups
-  q = ncol(data_obs)
+  group_sizes = sapply(group_labels, length)
+  cumul_group_sizes = c(0, cumsum(group_sizes)) # Add an extra zero at the beginning for easier indexing later
 
   boot_inds = c()
   for(i in seq_along(all_groups)){
-    group_start = n * (i-1) + 1
-    group_end = n * i
+    group_start = cumul_group_sizes[i] + 1
+    group_end = cumul_group_sizes[i+1]
     this_boot_inds = sample(group_start:group_end, replace = TRUE)
 
     boot_inds = c(boot_inds, this_boot_inds)
   }
-
-
-
-
-
 
 
   # Start with M ----
@@ -295,11 +226,12 @@ one_semi_parametric_resample <- function(mod_Y, mod_M){
   ## Random ----
   ran_coef_mat_M = lme4::ranef(mod_M)[[1]]
 
-  all_ran_coefs_M = c()
-  for (i in 1:nrow(ran_coef_mat_M)) {
-    all_ran_coefs_M = c(all_ran_coefs_M, as.numeric(ran_coef_mat_M[i, ]))
-  }
+  ### Simulate new random effects ----
+  SD_mat_M = lme4::getME(mod_M, "Lambda")
+  cov_mat_M = SD_mat_M %*% Matrix::t(SD_mat_M)
+  all_ran_coefs_M = MASS::mvrnorm(n = 1, mu = rep(0, ncol(cov_mat_M)), Sigma = cov_mat_M)
 
+  ### Random effects' contribution ----
   ran_contrib_M = as.matrix(data_ran_M) %*% all_ran_coefs_M
 
 
@@ -308,10 +240,15 @@ one_semi_parametric_resample <- function(mod_Y, mod_M){
   probs_M = boot::inv.logit(lin_preds_M)
   new_M = stats::rbinom(nrow(data_fix_M), 1, probs_M)
 
+  ## Match simulated Ms with group labels ----
+  all_group_labels = lme4::getME(mod_M, "flist")[[1]]
+  info_M = data.frame(value = new_M, group = all_group_labels)
+
+
 
   # Now onto Y ----
   data_fix_Y = model.matrix(mod_Y, type = "fixed")
-  data_ran_Y = model.matrix(mod_Y, type = "random") %>% as.matrix() %>% as.data.frame(check.names = T)
+  data_ran_Y = model.matrix(mod_Y, type = "random") %>% as.matrix() %>% as.data.frame()
 
   ## Bootstrap resample covariates ----
   ## Note: We're using the same indices as above, so our resampled covariates will match those used for M.
@@ -329,19 +266,21 @@ one_semi_parametric_resample <- function(mod_Y, mod_M){
     data_fix_Y[, "M"] = new_M
   }
 
-  lme4::getME(mod_M, "flist")
 
   ### Random effects data ----
-  all_group_labels = lme4::getME(mod_M, "flist")[[1]] %>% as.character()
-  all_groups = sort(unique(all_group_labels))
-  new_M_by_group = split(new_M, all_group_labels)
+  all_groups = sort(unique(all_group_labels)) %>% as.character()
+  new_M_by_group = split(info_M$value, info_M$group)
   q = ncol(data_ran_Y) / length(all_groups)
-  n = nrow(data_ran_Y) / length(all_groups)
+  group_sizes = sapply(new_M_by_group, length)
+  cumul_group_sizes = c(0, cumsum(group_sizes)) # Add an extra zero at the beginning for easier indexing later
+
+  # n = nrow(data_ran_Y) / length(all_groups)
 
   for (i in 1:length(all_groups)) {
     col_ind = q * (i-1) + 2
-    row_start = n * (i-1) + 1
-    row_end = n * i
+
+    row_start = cumul_group_sizes[i] + 1
+    row_end = cumul_group_sizes[i+1]
 
     this_group = all_groups[i]
     this_M = new_M_by_group[[this_group]]
@@ -352,16 +291,17 @@ one_semi_parametric_resample <- function(mod_Y, mod_M){
 
   ## Compute contributions to the linear predictor ----
 
+  ### Fixed effects ----
   fixed_contrib_Y = data_fix_Y %*% lme4::fixef(mod_Y)
 
+  ### Random effects ----
 
-  ran_coef_mat_Y = lme4::ranef(mod_Y)[[1]]
+  #### Simulate new random effects ----
+  SD_mat_Y = lme4::getME(mod_Y, "Lambda")
+  cov_mat_Y = SD_mat_Y %*% Matrix::t(SD_mat_Y)
+  all_ran_coefs_Y = MASS::mvrnorm(n = 1, mu = rep(0, ncol(cov_mat_Y)), Sigma = cov_mat_Y)
 
-  all_ran_coefs_Y = c()
-  for (i in 1:nrow(ran_coef_mat_Y)) {
-    all_ran_coefs_Y = c(all_ran_coefs_Y, as.numeric(ran_coef_mat_Y[i, ]))
-  }
-
+  #### Random effects' contribution ----
   ran_contrib_Y = as.matrix(data_ran_Y) %*% all_ran_coefs_Y
 
 
@@ -371,11 +311,20 @@ one_semi_parametric_resample <- function(mod_Y, mod_M){
   probs_Y = boot::inv.logit(lin_preds_Y)
   new_Y = stats::rbinom(nrow(data_fix_Y), 1, probs_Y)
 
+  ## Match simulated Ys with group labels ----
+  all_group_labels_Y = lme4::getME(mod_Y, "flist")[[1]]
+  info_Y = data.frame(value = new_Y, group = all_group_labels_Y)
+
 
 
   # Construct and return new dataset ----
   data_new = model.frame(mod_Y)
-  data_new$Y = new_Y
-  data_new$M = new_M
+
+  ## One group at a time, for robustness ----
+  for(group in all_groups){
+    data_new[data_new$group == group, "M"] = info_M$value[info_M$group == group]
+    data_new[data_new$group == group, "Y"] = info_Y$value[info_Y$group == group]
+  }
   return(data_new)
+
 }

@@ -12,7 +12,7 @@ results_prefix = paste0("./Data/boot_results_n=", n, "_K=", K, "_B=", B, "_M=", 
 file_names = list.files(results_prefix)
 
 all_boot_results_list = purrr::map(file_names, function(this_name){
-  load(paste0(this_dir, this_name))
+  load(paste0(results_prefix, this_name))
   this_MC_iter = as.numeric(stringr::str_extract(this_name, "\\d+"))
   this_boot_results$MC_iter = this_MC_iter
 

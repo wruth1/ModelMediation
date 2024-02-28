@@ -98,9 +98,23 @@ run_analysis_one_bootstrap <- function(data_formal, mod_Y=NULL, mod_M=NULL, .par
     mod_M = fit_mod_M_formal(data_formal)
   }
 
+  # tictoc::tic()
+  # boot_results_par = run_bootstrap(1, mod_Y = mod_Y, mod_M = mod_M, boot_type = "par", .parallel = .parallel, .verbose = .verbose)
+  # tictoc::toc()
+  #
+  # tictoc::tic()
+  # boot_results_spar = run_bootstrap(1, mod_Y = mod_Y, mod_M = mod_M, boot_type = "spar", .parallel = .parallel, .verbose = .verbose)
+  # tictoc::toc()
+  #
+  # tictoc::tic()
+  # boot_results_npar = run_bootstrap(1, data = data_formal, boot_type = "npar", .parallel = .parallel, .verbose = .verbose)
+  # tictoc::toc()
+
   boot_results_par = run_bootstrap(1, mod_Y = mod_Y, mod_M = mod_M, boot_type = "par", .parallel = .parallel, .verbose = .verbose)
   boot_results_spar = run_bootstrap(1, mod_Y = mod_Y, mod_M = mod_M, boot_type = "spar", .parallel = .parallel, .verbose = .verbose)
   boot_results_npar = run_bootstrap(1, data = data_formal, boot_type = "npar", .parallel = .parallel, .verbose = .verbose)
+
+
 
   this_boot_results = list(par = boot_results_par,
                            spar = boot_results_spar,

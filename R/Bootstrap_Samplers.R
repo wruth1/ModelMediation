@@ -195,7 +195,7 @@ one_semi_parametric_resample <- function(mod_Y, mod_M){
   group_labels = data_obs$group
   all_groups = sort(unique(group_labels))
 
-  group_sizes = sapply(group_labels, length)
+  group_sizes = table(group_labels)
   cumul_group_sizes = c(0, cumsum(group_sizes)) # Add an extra zero at the beginning for easier indexing later
 
   boot_inds = c()

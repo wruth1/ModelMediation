@@ -38,3 +38,19 @@ test_that("Every element of non-parametric sample is contained in original datas
     expect_true(is_DF1_subset_DF2(data_npar_list[[j]], data_list[[j]])) ######################################!!!!!!!!!!!!!! Start Here
   }
 })
+
+
+
+# Test bootstrap index generator for semi-par bootstrap ----
+boot_inds = get_boot_inds(data)
+
+group_match_check = map_lgl(seq_len(nrow(data)), \(i){
+  ref_group = data$group[i]
+  boot_group = data$group[boot_inds[i]]
+
+  return(ref_group == boot_group)
+})
+
+test_that("Bootstrap indices respect group membership",{
+  expect_true(all(group_match_check))
+})

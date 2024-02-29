@@ -22,3 +22,24 @@ plot_boot_CIs = ggplot(data_plot_boot_CIs, aes(y = group, group = group, color =
 plot_boot_CIs
 
 
+
+
+# Plot bootstrap distributions ----
+load(file = "Data/Real_Data_Boot_Coeffs.RData")
+
+
+B = max(all_boot_results$b)
+
+## Regression coefficients ----
+data_reg_coeffs_plot = tidyr::pivot_longer(all_boot_results, cols = c("X_in_Y", "M_in_Y", "X_in_M"), names_to = "coef", values_to = "estimate")
+all_groups = sort(unique(data_reg_coeffs_plot$group))
+all_reg_plots = list()
+for(i in seq_along(all_groups)){
+  this_group = all_groups[i]
+  this_plot = ggplot(dplyr::filter(data_reg_coeffs_plot, group==!!this_group), aes(x = estimate)) + geom_density() + facet_grid(rows = vars(boot_type), cols = vars(coef)) + ggtitle(paste0("Group: ", this_group, ", B: ", B))
+  all_reg_plots[[i]] = this_plot
+}
+
+for(i in seq_along(all_reg_plots)){
+  plot(all_reg_plots[[i]])
+}

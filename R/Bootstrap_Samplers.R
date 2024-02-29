@@ -170,6 +170,27 @@ one_parametric_resample <- function(mod_Y, mod_M){
 # Semi-Parametric ----
 
 
+# Construct indices for non-parametric bootstrap sample, respecting group membership.
+get_boot_inds <- function(data){
+  group_labels = data$group
+  all_groups = sort(unique(group_labels))
+
+  group_sizes = table(group_labels)
+  cumul_group_sizes = c(0, cumsum(group_sizes)) # Add an extra zero at the beginning for easier indexing later
+
+  boot_inds = c()
+  for(i in seq_along(all_groups)){
+    group_start = cumul_group_sizes[i] + 1
+    group_end = cumul_group_sizes[i+1]
+    this_boot_inds = sample(group_start:group_end, replace = TRUE)
+
+    boot_inds = c(boot_inds, this_boot_inds)
+  }
+
+  return(boot_inds)
+}
+
+
 #' Generate a semiparametric bootstrap sample using the provided fitted models
 #'
 #' @param mod_Y A model fit using `glmer` to predict `Y`
@@ -192,20 +213,7 @@ one_semi_parametric_resample <- function(mod_Y, mod_M){
 
   # First, generate indices for bootstrap sample from each group ----
   data_obs = model.frame(mod_M)
-  group_labels = data_obs$group
-  all_groups = sort(unique(group_labels))
 
-  group_sizes = table(group_labels)
-  cumul_group_sizes = c(0, cumsum(group_sizes)) # Add an extra zero at the beginning for easier indexing later
-
-  boot_inds = c()
-  for(i in seq_along(all_groups)){
-    group_start = cumul_group_sizes[i] + 1
-    group_end = cumul_group_sizes[i+1]
-    this_boot_inds = sample(group_start:group_end, replace = TRUE)
-
-    boot_inds = c(boot_inds, this_boot_inds)
-  }
 
 
   # Start with M ----

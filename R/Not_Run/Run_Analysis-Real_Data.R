@@ -107,11 +107,14 @@ for(this_name in file_names){
   boot_results_npar = rbind(boot_results_npar, this_results_npar)
 }
 
-## Sort the data frames by bootstrap iteration ----
-boot_results_par %<>% dplyr::arrange(b)
-boot_results_npar %<>% dplyr::arrange(b)
-boot_results_spar %<>% dplyr::arrange(b)
+## Sort the data frames by bootstrap iteration ---- ########################################### ToDo: Handle this more elegantly
+boot_results_par %<>% dplyr::arrange(b) %>% dplyr::mutate(boot_type = "par")
+boot_results_npar %<>% dplyr::arrange(b) %>% dplyr::mutate(boot_type = "npar")
+boot_results_spar %<>% dplyr::arrange(b) %>% dplyr::mutate(boot_type = "spar")
 
+## Store all bootstrap regression coefficients ----
+all_boot_results = rbind(boot_results_par, boot_results_spar, boot_results_npar)
+save(all_boot_results, file = "Data/Real_Data_Boot_Coeffs.RData")
 
 
 

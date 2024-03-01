@@ -214,7 +214,7 @@ one_semi_parametric_resample <- function(mod_Y, mod_M){
   # First, generate indices for bootstrap sample from each group ----
   data_obs = model.frame(mod_M)
 
-
+  boot_inds = get_boot_inds(data_obs)
 
   # Start with M ----
 

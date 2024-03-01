@@ -60,7 +60,6 @@ run_bootstrap <- function(B, data = NULL, mod_Y = NULL, mod_M = NULL, boot_type 
 
       if(.verbose){
         prog_update(i)
-        cat("\n")
       }
 
       return(this_boot_results)

@@ -67,7 +67,6 @@ one_parametric_resample <- function(mod_Y, mod_M){
 
 
   ## Random ----
-  ran_coef_mat_M = lme4::ranef(mod_M)[[1]]
 
   ### Simulate new random effects ----
   SD_mat_M = lme4::getME(mod_M, "Lambda")
@@ -232,7 +231,6 @@ one_semi_parametric_resample <- function(mod_Y, mod_M){
 
 
   ## Random ----
-  ran_coef_mat_M = lme4::ranef(mod_M)[[1]]
 
   ### Simulate new random effects ----
   SD_mat_M = lme4::getME(mod_M, "Lambda")
@@ -249,14 +247,15 @@ one_semi_parametric_resample <- function(mod_Y, mod_M){
   new_M = stats::rbinom(nrow(data_fix_M), 1, probs_M)
 
   ## Match simulated Ms with group labels ----
-  all_group_labels = lme4::getME(mod_M, "flist")[[1]]
+  all_group_labels = lme4::getME(mod_M, "flist")[[1]]             # No need to bootstrap resample, since groups are held fixed
   info_M = data.frame(value = new_M, group = all_group_labels)
 
 
 
   # Now onto Y ----
   data_fix_Y = model.matrix(mod_Y, type = "fixed")
-  data_ran_Y = model.matrix(mod_Y, type = "random") %>% as.matrix() %>% as.data.frame()
+  data_ran_Y = model.matrix(mod_Y, type = "random") %>%
+    as.matrix() %>% as.data.frame()   # Convert from sparse matrix to data frame
 
   ## Bootstrap resample covariates ----
   ## Note: We're using the same indices as above, so our resampled covariates will match those used for M.
@@ -268,6 +267,7 @@ one_semi_parametric_resample <- function(mod_Y, mod_M){
   ## Inject simulated M into the data for Y ----
 
   ### Fixed-effects data ----
+  ### Checking name just adds some robustness to use with real vs validation data
   if("M1" %in% colnames(data_fix_Y)){
     data_fix_Y[, "M1"] = new_M
   } else if("M" %in% colnames(data_fix_Y)){
@@ -328,7 +328,8 @@ one_semi_parametric_resample <- function(mod_Y, mod_M){
   # Construct and return new dataset ----
   data_new = model.frame(mod_Y)
 
-  ## One group at a time, for robustness ----
+  ## Overwrite old values of M and Y with simulated ones ----
+  ## One group at a time, for robustness
   for(group in all_groups){
     data_new[data_new$group == group, "M"] = info_M$value[info_M$group == group]
     data_new[data_new$group == group, "Y"] = info_Y$value[info_Y$group == group]

@@ -1,5 +1,5 @@
 # First, generate indices for bootstrap sample from each group ----
-  data_obs = model.frame(mod_M)
+  data_obs = stats::model.frame(mod_M)
   group_labels = data_obs$group
   all_groups = sort(unique(group_labels))
 
@@ -20,8 +20,8 @@
 
   ## Compute contribution to the linear predictor of the fixed and random effects separately ----
 
-  data_fix_M = model.matrix(mod_M, type = "fixed")
-  data_ran_M = model.matrix(mod_M, type = "random") %>% as.matrix() %>% as.data.frame()
+  data_fix_M = stats::model.matrix(mod_M, type = "fixed")
+  data_ran_M = stats::model.matrix(mod_M, type = "random") %>% as.matrix() %>% as.data.frame()
 
   ## Bootstrap resample covariates ----
   data_fix_M = data_fix_M[boot_inds, ]
@@ -55,8 +55,8 @@
 
 
   # Now onto Y ----
-  data_fix_Y = model.matrix(mod_Y, type = "fixed")
-  data_ran_Y = model.matrix(mod_Y, type = "random") %>% as.matrix() %>% as.data.frame()
+  data_fix_Y = stats::model.matrix(mod_Y, type = "fixed")
+  data_ran_Y = stats::model.matrix(mod_Y, type = "random") %>% as.matrix() %>% as.data.frame()
 
   ## Bootstrap resample covariates ----
   ## Note: We're using the same indices as above, so our resampled covariates will match those used for M.
@@ -126,7 +126,7 @@
 
 
   # Construct and return new dataset ----
-  data_new = model.frame(mod_Y)
+  data_new = stats::model.frame(mod_Y)
 
   ## One group at a time, for robustness ----
   for(group in all_groups){

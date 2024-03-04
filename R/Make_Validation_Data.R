@@ -238,8 +238,8 @@ make_response_RE_vec <-
 #
 #   ## Compute contribution to the linear predictor of the fixed and random effects separately ----
 #
-#   data_fix_M = model.matrix(mod_M, type = "fixed")
-#   data_ran_M = model.matrix(mod_M, type = "random") %>% as.matrix() %>% as.data.frame()
+#   data_fix_M = stats::model.matrix(mod_M, type = "fixed")
+#   data_ran_M = stats::model.matrix(mod_M, type = "random") %>% as.matrix() %>% as.data.frame()
 #
 #
 #   ## Fixed ----
@@ -264,8 +264,8 @@ make_response_RE_vec <-
 #
 #
 #   # Now onto Y ----
-#   data_fix_Y = model.matrix(mod_Y, type = "fixed")
-#   data_ran_Y = model.matrix(mod_Y, type = "random") %>% as.matrix() %>% as.data.frame(check.names = T)
+#   data_fix_Y = stats::model.matrix(mod_Y, type = "fixed")
+#   data_ran_Y = stats::model.matrix(mod_Y, type = "random") %>% as.matrix() %>% as.data.frame(check.names = T)
 #
 #
 #   ## Inject simulated M into the data for Y ----

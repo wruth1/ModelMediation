@@ -53,7 +53,7 @@ run_analysis <- function(data, B, .parallel = FALSE, .verbose = FALSE){
 
 #' Generate bootstrap samples, compute estimates, and construct CIs. Data must be formatted as a formal data frame.
 #'
-#' @param data Observed dataset, structured as a formal data frame
+#' @param data_formal A formal data frame.
 #' @param B Number of bootstrap replicates.
 #' @param .parallel Should bootstrapping be performed in parallel?
 #' @param .verbose Should progress bars be produced for the two bootstrap analyses?

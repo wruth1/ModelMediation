@@ -36,8 +36,10 @@ test_that("Group labels have successfully been recoded", {
 })
 
 
+data_formal_sorted = dplyr::arrange(data_formal, group)
+
 data_formal_direct = make_data_formal(data_new, "Y_alt", "M", "X", "group")
 
 test_that("Directly constructing the formal data frame works", {
-  expect_equal(data_formal, data_formal_direct)
+  expect_equal(data_formal_sorted, data_formal_direct)
 })

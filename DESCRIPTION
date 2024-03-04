@@ -27,6 +27,7 @@ Imports:
     lme4,
     magrittr,
     MASS,
+    Matrix,
     purrr,
     stats,
     stringr,

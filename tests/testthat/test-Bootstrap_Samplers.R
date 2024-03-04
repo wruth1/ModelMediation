@@ -44,7 +44,7 @@ test_that("Every element of non-parametric sample is contained in original datas
 # Test bootstrap index generator for semi-par bootstrap ----
 boot_inds = get_boot_inds(data)
 
-group_match_check = map_lgl(seq_len(nrow(data)), \(i){
+group_match_check = purrr::map_lgl(seq_len(nrow(data)), \(i){
   ref_group = data$group[i]
   boot_group = data$group[boot_inds[i]]
 
@@ -54,3 +54,4 @@ group_match_check = map_lgl(seq_len(nrow(data)), \(i){
 test_that("Bootstrap indices respect group membership",{
   expect_true(all(group_match_check))
 })
+

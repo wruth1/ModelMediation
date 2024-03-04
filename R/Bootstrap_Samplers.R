@@ -58,8 +58,8 @@ one_parametric_resample <- function(mod_Y, mod_M){
 
   ## Compute contribution to the linear predictor of the fixed and random effects separately ----
 
-  data_fix_M = model.matrix(mod_M, type = "fixed")
-  data_ran_M = model.matrix(mod_M, type = "random") %>% as.matrix() %>% as.data.frame()
+  data_fix_M = stats::model.matrix(mod_M, type = "fixed")
+  data_ran_M = stats::model.matrix(mod_M, type = "random") %>% as.matrix() %>% as.data.frame()
 
 
   ## Fixed ----
@@ -89,8 +89,8 @@ one_parametric_resample <- function(mod_Y, mod_M){
 
 
   # Now onto Y ----
-  data_fix_Y = model.matrix(mod_Y, type = "fixed")
-  data_ran_Y = model.matrix(mod_Y, type = "random") %>% as.matrix() %>% as.data.frame()
+  data_fix_Y = stats::model.matrix(mod_Y, type = "fixed")
+  data_ran_Y = stats::model.matrix(mod_Y, type = "random") %>% as.matrix() %>% as.data.frame()
 
 
   ## Inject simulated M into the data for Y ----
@@ -154,7 +154,7 @@ one_parametric_resample <- function(mod_Y, mod_M){
 
 
   # Construct and return new dataset ----
-  data_new = model.frame(mod_Y)
+  data_new = stats::model.frame(mod_Y)
 
   ## One group at a time, for robustness ----
   for(group in all_groups){
@@ -211,7 +211,7 @@ get_boot_inds <- function(data){
 one_semi_parametric_resample <- function(mod_Y, mod_M){
 
   # First, generate indices for bootstrap sample from each group ----
-  data_obs = model.frame(mod_M)
+  data_obs = stats::model.frame(mod_M)
 
   boot_inds = get_boot_inds(data_obs)
 
@@ -219,8 +219,8 @@ one_semi_parametric_resample <- function(mod_Y, mod_M){
 
   ## Compute contribution to the linear predictor of the fixed and random effects separately ----
 
-  data_fix_M = model.matrix(mod_M, type = "fixed")
-  data_ran_M = model.matrix(mod_M, type = "random") %>% as.matrix() %>% as.data.frame()
+  data_fix_M = stats::model.matrix(mod_M, type = "fixed")
+  data_ran_M = stats::model.matrix(mod_M, type = "random") %>% as.matrix() %>% as.data.frame()
 
   ## Bootstrap resample covariates ----
   data_fix_M = data_fix_M[boot_inds, ]
@@ -253,8 +253,8 @@ one_semi_parametric_resample <- function(mod_Y, mod_M){
 
 
   # Now onto Y ----
-  data_fix_Y = model.matrix(mod_Y, type = "fixed")
-  data_ran_Y = model.matrix(mod_Y, type = "random") %>%
+  data_fix_Y = stats::model.matrix(mod_Y, type = "fixed")
+  data_ran_Y = stats::model.matrix(mod_Y, type = "random") %>%
     as.matrix() %>% as.data.frame()   # Convert from sparse matrix to data frame
 
   ## Bootstrap resample covariates ----
@@ -326,7 +326,7 @@ one_semi_parametric_resample <- function(mod_Y, mod_M){
 
 
   # Construct and return new dataset ----
-  data_new = model.frame(mod_Y)
+  data_new = stats::model.frame(mod_Y)
 
   ## Overwrite old values of M and Y with simulated ones ----
   ## One group at a time, for robustness

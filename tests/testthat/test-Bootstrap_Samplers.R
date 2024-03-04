@@ -1,7 +1,3 @@
-test_that("multiplication works", {
-  expect_equal(2 * 2, 4)
-})
-
 
 
 n = 20
@@ -31,7 +27,7 @@ test_that("Size of parametric sample is correct",{
 
 test_that("Grouping variable matches original data",{
   expect_equal(data_npar$group, data$group)
-  expect_equal(data_par$group, data$group)
+  expect_equal(as.character(data_par$group), data$group)
 })
 
 test_that("Every element of non-parametric sample is contained in original dataset (in correct group)",{
@@ -41,4 +37,20 @@ test_that("Every element of non-parametric sample is contained in original datas
   for(j in seq_along(data_list)){
     expect_true(is_DF1_subset_DF2(data_npar_list[[j]], data_list[[j]])) ######################################!!!!!!!!!!!!!! Start Here
   }
+})
+
+
+
+# Test bootstrap index generator for semi-par bootstrap ----
+boot_inds = get_boot_inds(data)
+
+group_match_check = map_lgl(seq_len(nrow(data)), \(i){
+  ref_group = data$group[i]
+  boot_group = data$group[boot_inds[i]]
+
+  return(ref_group == boot_group)
+})
+
+test_that("Bootstrap indices respect group membership",{
+  expect_true(all(group_match_check))
 })

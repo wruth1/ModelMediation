@@ -64,6 +64,7 @@ lin_pred_RE_contrib <- function(data_ran, Gamma, add_intercept = TRUE, return_RE
 }
 
 
+
 #' Compute the linear predictor based on provided datasets and parameters
 #'
 #' Note : Please specify either add_intercept or both add_intercept_fix and add_intercept_ran. Do not provide all three!
@@ -117,20 +118,17 @@ get_lin_preds <- function(data_fix, data_ran, beta, Gamma, add_intercept = NULL,
   }
 
 
+  # Compute fixed and random effects components of the linear predictor
   contrib_fix = lin_pred_contrib(data_fix, beta, add_intercept_fix)
 
-  info_ran = lin_pred_RE_contrib(data_ran, Gamma, add_intercept_ran, return_REs)
-  if(return_REs){
-    contrib_ran = info_ran$contrib
-    REs = info_ran$REs
-  } else{
-    contrib_ran = info_ran
-  }
+  ran_effs = make_REs(Gamma)
+  contrib_ran = lin_pred_contrib(data_ran, ran_effs, add_intercept_ran)
 
   lin_preds = contrib_fix + contrib_ran
 
+  # Return linear predictors, optionally in a list alongside the random effects
   if(return_REs){
-    output = list(lin_preds = lin_preds, REs = REs)
+    output = list(lin_preds = lin_preds, REs = ran_effs)
   } else{
     return(lin_preds)
   }
@@ -138,39 +136,24 @@ get_lin_preds <- function(data_fix, data_ran, beta, Gamma, add_intercept = NULL,
 
 
 
+# Some extra utilities ----
 
-# Focus on testing ----
+get_lin_preds_RE_cov <- function(data_fix, data_ran, beta_fix, Gamma){
+  contrib_fix = lin_pred_contrib(data_fix, beta_fix)
+  ran_effs = make_REs(Gamma)
+  contrib_ran = lin_pred_contrib(data_ran, ran_effs, add_intercept_ran)
 
-exp_lin_pred_M <- function(X, all_Cs, beta, U){
-  n = length(X)
-  if(nrow(all_Cs) != n) stop("In exp_lin_pred_M(): X and all_Cs must have same number of rows.")
+  lin_preds = contrib_fix + contrib_ran
+  return(lin_preds)
+}
 
-  # Organize X and all_Cs into datasets
-  data_fix = data.frame(X = X, all_Cs)
-  data_ran = data.frame(X = X)
+get_lin_preds_RE_vec <- function(data_fix, data_ran, beta_fix, beta_ran){
+  contrib_fix = lin_pred_contrib(data_fix, beta_fix)
+  contrib_ran = lin_pred_contrib(data_ran, beta_ran, add_intercept_ran)
 
-  # Compute linear predictor
-  eta = get_lin_preds(data_fix, data_ran, beta, U)
-
-  # Compute probability of M = 1
-  p_M1 = 1 / (1 + exp(-eta))
-  return(p_M1)
+  lin_preds = contrib_fix + contrib_ran
+  return(lin_preds)
 }
 
 
 
-exp_lin_pred_Y <- function(M, X, all_Cs, beta, U){
-  n = length(X)
-  if(nrow(all_Cs) != n) stop("In exp_lin_pred_Y(): X and all_Cs must have same number of rows.")
-
-  # Organize M, X and all_Cs into datasets
-  data_fix = data.frame(M=M, X = X, all_Cs)
-  data_ran = data.frame(M=M, X = X)
-
-  # Compute linear predictor
-  eta = get_lin_preds(data_fix, data_ran, beta, U)
-
-  # Compute probability of Y = 1
-  p_Y1 = 1 / (1 + exp(-eta))
-  return(p_Y1)
-}

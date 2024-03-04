@@ -1,0 +1,7 @@
+I've made some modifications to my grand vision in order to expedite the analysis of our real dataset. These will need to get fixed before the package is ready. Here is a list of known changes:
+	fit_mod_Y_formal() and fit_mod_M_formal() are not fully general. I added in a random effect for the X-indicator which is not of interest (X is categorical with 3 levels). In order to get the tests to run, I've also added a very hacky if-else statement so that the same function can fit both validation data and real data.
+	In general, I know that our problem has fixed and mixed effects, but no pure random effects. I may or may not be exploiting this throughout the project. I don't think I've intentionally done so, but who knows about unintentional dependencies.
+	Some of my code works with the named levels of the predictors, e.g. Mno_or_some. To get a fully formal structure, the covariates' levels are going to have to be 0/1. Note: That's a problem for my code to solve, not a constraint to impose on the end user (cough cough Imai et al.)
+	Search for test_that("Grouping variable matches original data"
+		Hacky solution to get the test to pass
+		

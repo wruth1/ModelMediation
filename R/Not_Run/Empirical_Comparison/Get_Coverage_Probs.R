@@ -1,10 +1,11 @@
 
 # Read-in results of MC study ----
 
-n = 100
-K = 3
+n = 200
+K = 10
 B = 200
-num_MC_reps = 256
+# num_MC_reps = 256
+num_MC_reps = 200
 
 
 results_prefix = paste0("./Data/boot_results_n=", n, "_K=", K, "_B=", B, "_M=", num_MC_reps, "/")
@@ -12,7 +13,7 @@ results_prefix = paste0("./Data/boot_results_n=", n, "_K=", K, "_B=", B, "_M=", 
 file_names = list.files(results_prefix)
 
 all_boot_results_list = purrr::map(file_names, function(this_name){
-  load(paste0(this_dir, this_name))
+  load(paste0(results_prefix, this_name))
   this_MC_iter = as.numeric(stringr::str_extract(this_name, "\\d+"))
   this_boot_results$MC_iter = this_MC_iter
 
@@ -62,3 +63,5 @@ pct_par_cover_rates = dplyr::filter(pct_cover_rates, boot_type != "npar")
 pct_par_cover_global = mean(pct_par_cover_rates$cover_rate)
 pct_par_cover_by_group = cover_by_var("group", pct_par_cover_rates)
 pct_par_cover_by_med_type = cover_by_var("med_type", pct_par_cover_rates)
+
+

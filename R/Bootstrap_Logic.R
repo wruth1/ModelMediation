@@ -60,7 +60,6 @@ run_bootstrap <- function(B, data = NULL, mod_Y = NULL, mod_M = NULL, boot_type 
 
       if(.verbose){
         prog_update(i)
-        cat("\n")
       }
 
       return(this_boot_results)
@@ -151,10 +150,10 @@ one_bootstrap_sample <- function(data = NULL, mod_Y = NULL, mod_M = NULL, boot_t
   ## If models are required but not supplied, fit them ----
   if(boot_type == "par" || boot_type == "spar"){
     if(is.null(mod_Y)){
-      mod_Y = fit_mod_Y(data)
+      mod_Y = fit_mod_Y_formal(data)
     }
     if(is.null(mod_M)){
-      mod_M = fit_mod_M(data)
+      mod_M = fit_mod_M_formal(data)
     }
   }
 

@@ -1,0 +1,109 @@
+# Start with M ----
+
+  ## Compute contribution to the linear predictor of the fixed and random effects separately ----
+
+  data_fix_M = model.matrix(mod_M, type = "fixed")
+  data_ran_M = model.matrix(mod_M, type = "random") %>% as.matrix() %>% as.data.frame()
+
+
+  ## Fixed ----
+  fixed_contrib_M = data_fix_M %*% lme4::fixef(mod_M)
+
+
+  ## Random ----
+  ran_coef_mat_M = lme4::ranef(mod_M)[[1]]
+
+  ### Simulate new random effects ----
+  SD_mat_M = lme4::getME(mod_M, "Lambda")
+  cov_mat_M = SD_mat_M %*% Matrix::t(SD_mat_M)
+  all_ran_coefs_M = MASS::mvrnorm(n = 1, mu = rep(0, ncol(cov_mat_M)), Sigma = cov_mat_M)
+
+  ### Random effects' contribution ----
+  ran_contrib_M = as.matrix(data_ran_M) %*% all_ran_coefs_M
+
+
+  ## Simulate new M ----
+  lin_preds_M = fixed_contrib_M + ran_contrib_M
+  probs_M = boot::inv.logit(lin_preds_M)
+  new_M = stats::rbinom(nrow(data_fix_M), 1, probs_M)
+
+  ## Match simulated Ms with group labels ----
+  all_group_labels = lme4::getME(mod_M, "flist")[[1]]
+  info_M = data.frame(value = new_M, group = all_group_labels)
+
+
+
+  # Now onto Y ----
+  data_fix_Y = model.matrix(mod_Y, type = "fixed")
+  data_ran_Y = model.matrix(mod_Y, type = "random") %>% as.matrix() %>% as.data.frame()
+
+
+  ## Inject simulated M into the data for Y ----
+
+  ### Fixed-effects data ----
+  if("M1" %in% colnames(data_fix_Y)){
+    data_fix_Y[, "M1"] = new_M
+  } else if("M" %in% colnames(data_fix_Y)){
+    data_fix_Y[, "M"] = new_M
+  }
+
+
+  ### Random effects data ----
+  all_groups = sort(unique(all_group_labels)) %>% as.character()
+  new_M_by_group = split(info_M$value, info_M$group)
+  q = ncol(data_ran_Y) / length(all_groups)
+  group_sizes = sapply(new_M_by_group, length)
+  cumul_group_sizes = c(0, cumsum(group_sizes)) # Add an extra zero at the beginning for easier indexing later
+
+  # n = nrow(data_ran_Y) / length(all_groups)
+
+  for (i in 1:length(all_groups)) {
+    col_ind = q * (i-1) + 2
+
+    row_start = cumul_group_sizes[i] + 1
+    row_end = cumul_group_sizes[i+1]
+
+    this_group = all_groups[i]
+    this_M = new_M_by_group[[this_group]]
+
+    data_ran_Y[row_start:row_end, col_ind] = this_M
+  }
+
+
+  ## Compute contributions to the linear predictor ----
+
+  ### Fixed effects ----
+  fixed_contrib_Y = data_fix_Y %*% lme4::fixef(mod_Y)
+
+  ### Random effects ----
+
+  #### Simulate new random effects ----
+  SD_mat_Y = lme4::getME(mod_Y, "Lambda")
+  cov_mat_Y = SD_mat_Y %*% Matrix::t(SD_mat_Y)
+  all_ran_coefs_Y = MASS::mvrnorm(n = 1, mu = rep(0, ncol(cov_mat_Y)), Sigma = cov_mat_Y)
+
+  #### Random effects' contribution ----
+  ran_contrib_Y = as.matrix(data_ran_Y) %*% all_ran_coefs_Y
+
+
+
+  ## Simulate new Y ----
+  lin_preds_Y = fixed_contrib_Y + ran_contrib_Y
+  probs_Y = boot::inv.logit(lin_preds_Y)
+  new_Y = stats::rbinom(nrow(data_fix_Y), 1, probs_Y)
+
+  ## Match simulated Ys with group labels ----
+  all_group_labels_Y = lme4::getME(mod_Y, "flist")[[1]]
+  info_Y = data.frame(value = new_Y, group = all_group_labels_Y)
+
+
+
+  # Construct and return new dataset ----
+  data_new = model.frame(mod_Y)
+
+  ## One group at a time, for robustness ----
+  for(group in all_groups){
+    data_new[data_new$group == group, "M"] = info_M$value[info_M$group == group]
+    data_new[data_new$group == group, "Y"] = info_Y$value[info_Y$group == group]
+  }
+  return(data_new)

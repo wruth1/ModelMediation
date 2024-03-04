@@ -39,9 +39,9 @@ all_reg_pars = make_all_reg_pars()
 
 
 # Initialize Cluster ----
-n_cores = 10
+# n_cores = 10
 # n_cores = parallel::detectCores() - 1
-# n_cores = parallel::detectCores()
+n_cores = parallel::detectCores()
 my_cluster = parallel::makeCluster(n_cores)
 doSNOW::registerDoSNOW(cl = my_cluster)
 snow::clusterEvalQ(my_cluster,{
@@ -51,7 +51,7 @@ snow::clusterEvalQ(my_cluster,{
 parallel::clusterExport(my_cluster, c("n", "K", "B", "all_reg_pars", "results_prefix"))
 
 
-# tictoc::tic()
+tictoc::tic()
 
 
 # ### Initialize Progress Bar ----
@@ -94,11 +94,14 @@ test_boot_results = pbapply::pbsapply(1:B, function(i){
 #
 #   return(this_boot_results)
 # }
-# cat("\n")
-# tictoc::toc()
+
+
 
 
 
 parallel::stopCluster(my_cluster)
 
 
+
+cat("\n")
+tictoc::toc()

@@ -10,16 +10,16 @@
 # B = this_settings[3]
 
 
-n = 200
+n = 20
 K = 10
-B = 200
+B = 5
 
 # n = 11
 # K = 3
 # B = 5
 
 
-num_MC_reps = 200
+num_MC_reps = 50
 # num_MC_reps = 256
 # num_MC_reps = 10
 

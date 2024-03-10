@@ -1,0 +1,110 @@
+ℹ Loading ModelMediation
+Loading required package: foreach
+Loading required package: iterators
+Loading required package: parallel
+[[1]]
+[[1]]$env
+<environment: namespace:ModelMediation>
+
+[[1]]$data
+character(0)
+
+[[1]]$code
+ [1] "/scratch/wruth/ModelMediation/R/Bootstrap_Logic.R"       
+ [2] "/scratch/wruth/ModelMediation/R/Bootstrap_Samplers.R"    
+ [3] "/scratch/wruth/ModelMediation/R/Confidence_Intervals.R"  
+ [4] "/scratch/wruth/ModelMediation/R/Fit_Regression_Models.R" 
+ [5] "/scratch/wruth/ModelMediation/R/Linear_Predictor.R"      
+ [6] "/scratch/wruth/ModelMediation/R/Make_Validation_Data.R"  
+ [7] "/scratch/wruth/ModelMediation/R/ModelMediation-package.R"
+ [8] "/scratch/wruth/ModelMediation/R/Package_Workflow.R"      
+ [9] "/scratch/wruth/ModelMediation/R/boot_samp_2_coeffs.R"    
+[10] "/scratch/wruth/ModelMediation/R/get_med_effs.R"          
+[11] "/scratch/wruth/ModelMediation/R/main.R"                  
+[12] "/scratch/wruth/ModelMediation/R/utils-pipe.R"            
+[13] "/scratch/wruth/ModelMediation/R/utils.R"                 
+
+[[1]]$dll
+list()
+
+
+[[2]]
+[[2]]$env
+<environment: namespace:ModelMediation>
+
+[[2]]$data
+character(0)
+
+[[2]]$code
+ [1] "/scratch/wruth/ModelMediation/R/Bootstrap_Logic.R"       
+ [2] "/scratch/wruth/ModelMediation/R/Bootstrap_Samplers.R"    
+ [3] "/scratch/wruth/ModelMediation/R/Confidence_Intervals.R"  
+ [4] "/scratch/wruth/ModelMediation/R/Fit_Regression_Models.R" 
+ [5] "/scratch/wruth/ModelMediation/R/Linear_Predictor.R"      
+ [6] "/scratch/wruth/ModelMediation/R/Make_Validation_Data.R"  
+ [7] "/scratch/wruth/ModelMediation/R/ModelMediation-package.R"
+ [8] "/scratch/wruth/ModelMediation/R/Package_Workflow.R"      
+ [9] "/scratch/wruth/ModelMediation/R/boot_samp_2_coeffs.R"    
+[10] "/scratch/wruth/ModelMediation/R/get_med_effs.R"          
+[11] "/scratch/wruth/ModelMediation/R/main.R"                  
+[12] "/scratch/wruth/ModelMediation/R/utils-pipe.R"            
+[13] "/scratch/wruth/ModelMediation/R/utils.R"                 
+
+[[2]]$dll
+list()
+
+
+[[3]]
+[[3]]$env
+<environment: namespace:ModelMediation>
+
+[[3]]$data
+character(0)
+
+[[3]]$code
+ [1] "/scratch/wruth/ModelMediation/R/Bootstrap_Logic.R"       
+ [2] "/scratch/wruth/ModelMediation/R/Bootstrap_Samplers.R"    
+ [3] "/scratch/wruth/ModelMediation/R/Confidence_Intervals.R"  
+ [4] "/scratch/wruth/ModelMediation/R/Fit_Regression_Models.R" 
+ [5] "/scratch/wruth/ModelMediation/R/Linear_Predictor.R"      
+ [6] "/scratch/wruth/ModelMediation/R/Make_Validation_Data.R"  
+ [7] "/scratch/wruth/ModelMediation/R/ModelMediation-package.R"
+ [8] "/scratch/wruth/ModelMediation/R/Package_Workflow.R"      
+ [9] "/scratch/wruth/ModelMediation/R/boot_samp_2_coeffs.R"    
+[10] "/scratch/wruth/ModelMediation/R/get_med_effs.R"          
+[11] "/scratch/wruth/ModelMediation/R/main.R"                  
+[12] "/scratch/wruth/ModelMediation/R/utils-pipe.R"            
+[13] "/scratch/wruth/ModelMediation/R/utils.R"                 
+
+[[3]]$dll
+list()
+
+
+[[4]]
+[[4]]$env
+<environment: namespace:ModelMediation>
+
+[[4]]$data
+character(0)
+
+[[4]]$code
+ [1] "/scratch/wruth/ModelMediation/R/Bootstrap_Logic.R"       
+ [2] "/scratch/wruth/ModelMediation/R/Bootstrap_Samplers.R"    
+ [3] "/scratch/wruth/ModelMediation/R/Confidence_Intervals.R"  
+ [4] "/scratch/wruth/ModelMediation/R/Fit_Regression_Models.R" 
+ [5] "/scratch/wruth/ModelMediation/R/Linear_Predictor.R"      
+ [6] "/scratch/wruth/ModelMediation/R/Make_Validation_Data.R"  
+ [7] "/scratch/wruth/ModelMediation/R/ModelMediation-package.R"
+ [8] "/scratch/wruth/ModelMediation/R/Package_Workflow.R"      
+ [9] "/scratch/wruth/ModelMediation/R/boot_samp_2_coeffs.R"    
+[10] "/scratch/wruth/ModelMediation/R/get_med_effs.R"          
+[11] "/scratch/wruth/ModelMediation/R/main.R"                  
+[12] "/scratch/wruth/ModelMediation/R/utils-pipe.R"            
+[13] "/scratch/wruth/ModelMediation/R/utils.R"                 
+
+[[4]]$dll
+list()
+
+
+
+128.579 sec elapsed

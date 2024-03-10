@@ -1,0 +1,9 @@
+This folder is used both to run the timing study and compute empirical coverage probabilities for the various bootstrap intervals.
+Parameter settings for both studies are constructed using the "Construct_Parameter_Combinations.R" script.
+Parameters for the timing study are stored in "some_par_combinations.RData" under the variable "some_pars"
+Parameters for the coverage probability study are stored in "all_par_combinations.RData" under the variable "all_pars"
+
+The R script "One_Setting.R" is the main driver for the analysis. It generates a dataset and runs all three bootstraps.
+It does not currently construct confidence intervals or compute coverage probabilities. Bootstrap regression coefficients (I think) are saved in a subfolder of "ModelMediation/Data" (i.e. a subfolder of "./../../../Data")
+I definitely have functions which map from estimated effects to confidence intervals, I just had trouble running them on the cluster.
+	ToDo: Make sure that the output I'm constructing here is actually appropriate for my CI functions.

@@ -51,6 +51,24 @@ run_analysis <- function(data, B, .parallel = FALSE, .verbose = FALSE){
   return(all_boot_CIs)
 }
 
+
+run_analysis_no_CIs <- function(data, B, .parallel = FALSE, .verbose = FALSE){
+  mod_Y = fit_mod_Y(data)
+  mod_M = fit_mod_M(data)
+
+  boot_results_par = run_bootstrap(B, mod_Y = mod_Y, mod_M = mod_M, boot_type = "par", .parallel = .parallel, .verbose = .verbose)
+
+  boot_results_spar = run_bootstrap(B, mod_Y = mod_Y, mod_M = mod_M, boot_type = "spar", .parallel = .parallel, .verbose = .verbose)
+
+  boot_results_npar = run_bootstrap(B, data = data, boot_type = "npar", .parallel = .parallel, .verbose = .verbose)
+
+
+  output = list(boot_results_par = boot_results_par, boot_results_spar = boot_results_spar, boot_results_npar = boot_results_npar)
+  return(output)
+}
+
+
+
 #' Generate bootstrap samples, compute estimates, and construct CIs. Data must be formatted as a formal data frame.
 #'
 #' @param data_formal A formal data frame.

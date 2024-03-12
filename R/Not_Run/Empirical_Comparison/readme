@@ -7,3 +7,5 @@ The R script "One_Setting.R" is the main driver for the analysis. It generates a
 It does not currently construct confidence intervals or compute coverage probabilities. Bootstrap regression coefficients (I think) are saved in a subfolder of "ModelMediation/Data" (i.e. a subfolder of "./../../../Data")
 I definitely have functions which map from estimated effects to confidence intervals, I just had trouble running them on the cluster.
 	ToDo: Make sure that the output I'm constructing here is actually appropriate for my CI functions.
+
+I am storing runtimes in the folder "./Runtimes/", in ".RData" files indexed by parameter values. Each file contains an object called `runtime`, which is the output of `tictoc::toc()`. The relevant output is `runtime$callback_msg`, which is a string that contains the runtime in seconds. I can extract this using a regex and then store it in a data frame.

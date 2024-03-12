@@ -8,4 +8,4 @@
 module load gcc r
 
 export NODESLIST=$(echo $(srun hostname | cut -f 1 -d '.'))
-Rscript One_Setting.R
+Rscript One_Setting.R $SLURM_ARRAY_TASK_ID

@@ -4,8 +4,8 @@
 .httr-oauth
 .DS_Store
 .quarto
-Data/*
-!Data/Timing/*
+# Data/*
+!Data/*
 ModelMediation.code-workspace
 inst/doc
 # R/Not_Run/Empirical_Comparison/Runtimes/*

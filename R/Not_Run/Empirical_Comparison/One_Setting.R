@@ -36,7 +36,8 @@ devtools::load_all(".")
 
 
 # num_MC_reps = 256
-num_MC_reps = 4
+# num_MC_reps = 4
+num_MC_reps = 50
 # num_MC_reps = 144	# = 48 * 3, where 48 is the number of cores in an entire node for Cedar
 
 library(doParallel)

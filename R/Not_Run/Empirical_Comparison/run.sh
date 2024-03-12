@@ -1,11 +1,11 @@
 #!/bin/bash
-#SBATCH --time=0:20:0
-#SBATCH --ntasks=4
+#SBATCH --time=1:0:0
+#SBATCH --ntasks=25
 #SBATCH --mem-per-cpu=2000M
 #SBATCH --array=1-27
 #SBATCH --output="./output/%A_%a.out"
-#SBATCH --main-user=wruth@sfu.ca
-#SBATCH --main-type=END
+#SBATCH --mail-user=wruth@sfu.ca
+#SBATCH --mail-type=END
 
 module load gcc r
 

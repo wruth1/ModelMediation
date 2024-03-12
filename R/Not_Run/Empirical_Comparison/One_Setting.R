@@ -11,10 +11,10 @@ load("some_par_combinations.RData")
 this_par_comb = some_pars[setting_number,]
 
 
-# # Extract parameter values for the current run
-# n = this_par_comb$n
-# K = this_par_comb$K
-# B = this_par_comb$B
+# Extract parameter values for the current run
+n = this_par_comb$n
+K = this_par_comb$K
+B = this_par_comb$B
 
 #
 # all_settings = read.table("All_Parameter_Combinations.csv", sep = ",")
@@ -26,9 +26,9 @@ this_par_comb = some_pars[setting_number,]
 
 devtools::load_all(".")
 
-n = 40
-K = 2
-B = 10
+# n = 40
+# K = 2
+# B = 10
 
 # n = 11
 # K = 3
@@ -42,13 +42,13 @@ num_MC_reps = 4
 library(doParallel)
 
 
-external_results_prefix = paste0("../../../Data/boot_results_n=", n, "_K=", K, "_B=", B, "_M=", num_MC_reps)
-dir.create(external_results_prefix, showWarnings = FALSE)
-external_runtime_prefix = paste0("./Runtimes/n=", n, "_K=", K, "_B=", B, "_M=", num_MC_reps, ".RData")
+external_results_prefix = paste0("../../../Data/Timing/boot_results_n=", n, "_K=", K, "_B=", B, "_M=", num_MC_reps)
+dir.create(external_results_prefix, showWarnings = FALSE, recursive = TRUE)
+external_runtime_prefix = paste0("Runtimes/n=", n, "_K=", K, "_B=", B, "_M=", num_MC_reps, ".RData")
 
-cluster_results_prefix = paste0("scratch/ModelMediation/Data/boot_results_n=", n, "_K=", K, "_B=", B, "_M=", num_MC_reps)
-cluster_runtime_prefix = paste0("scratch/ModelMediation/R/Not_Run/Empirical_Comparison/Runtimes/n=", n, "_K=", K, "_B=", B, "_M=", num_MC_reps, ".RData")
 
+cluster_results_prefix = paste0("scratch/ModelMediation/Data/Timing/boot_results_n=", n, "_K=", K, "_B=", B, "_M=", num_MC_reps)
+cluster_runtime_prefix = paste0("scratch/ModelMediation/R/Not_Run/Empirical_Comparison/", external_runtime_prefix)
 
 all_reg_pars = make_all_reg_pars()
 
@@ -85,7 +85,7 @@ test_boot_results = pbapply::pbsapply(1:num_MC_reps, function(i){
   data = make_validation_data(n, K, all_reg_pars)
 
     #tictoc::tic()
-    # this_boot_results = run_analysis(data, B, .verbose = TRUE, .parallel = FALSE)
+    # this_boot_results = run_analysis(data, B, .verbose = FALSE, .parallel = FALSE)
     this_boot_results = run_analysis_no_CIs(data, B, .verbose = FALSE, .parallel = FALSE)
     #tictoc::toc()
 

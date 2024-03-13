@@ -114,7 +114,7 @@ get_med_effs <- function(X_in_Y, M_in_Y, X_in_M, Y_binary=TRUE, M_binary=TRUE){
 get_med_effs_binY_binM = function(X_in_Y, M_in_Y, X_in_M){
   de = exp(X_in_Y)
   ie = exp(X_in_M * M_in_Y)
-  te = de * ie
+  te = exp(X_in_Y + X_in_M * M_in_Y)
 
   output = c(de, ie, te)
   names(output) = c("de", "ie", "te")

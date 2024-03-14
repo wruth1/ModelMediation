@@ -1,6 +1,7 @@
 
 # # Get simulation settings from command line arguments
-setting_number = as.numeric(commandArgs(trailingOnly = TRUE)[1])
+# setting_number = as.numeric(commandArgs(trailingOnly = TRUE)[1])
+setting_number = 1
 
 # # The actual grid of parameter values I want to evaluate coverage probabilities on
 load("all_par_combinations.RData")
@@ -77,60 +78,3 @@ clusterExport(my_cluster, c("n", "K", "B", "all_reg_pars", "cluster_results_pref
 
 tictoc::tic()
 
-
-# ### Initialize Progress Bar ----
-# ### Note: DoSNOW_opts is only used if .parallel == T
-# prog = utils::txtProgressBar(max = num_MC_reps, style = 3)
-# prog_update = function(n) utils::setTxtProgressBar(prog, n)
-# DoSNOW_opts = list(progress = prog_update)
-
-
-test_boot_results = pbapply::pbsapply(1:num_MC_reps, function(i){
-  data = make_validation_data(n, K, all_reg_pars)
-
-    #tictoc::tic()
-    # this_boot_results = run_analysis(data, B, .verbose = FALSE, .parallel = FALSE)
-    this_boot_results = run_analysis(data, B, .verbose = FALSE, .parallel = FALSE)
-    #tictoc::toc()
-
-    # run_analysis_one_bootstrap(real_data, .verbose = TRUE, .parallel = FALSE)
-
-    save(this_boot_results, file = paste0(cluster_results_prefix, "/i=", i, ".RData"))
-    # save(this_boot_results, file = paste0(external_results_prefix, "/i=", i, ".RData"))
-
-    return(this_boot_results)
- }, cl = my_cluster)
-# })
-
-
-
-# all_boot_results_parallel = foreach::foreach(i = seq_len(num_MC_reps), .options.snow = DoSNOW_opts) %dopar% {
-#   set.seed(i * 1000)
-#
-#   data = make_validation_data(n, K, all_reg_pars)
-#
-#   # tictoc::tic()
-#   this_boot_results = run_analysis(data, B, .verbose = FALSE, .parallel = FALSE)
-#   # this_boot_results = run_analysis(data, B, .verbose = TRUE, .parallel = TRUE)
-#   # this_boot_results = run_analysis(data, B, .verbose = TRUE, .parallel = FALSE)
-#   # tictoc::toc()
-#
-#   # this_boot_results = run_analysis(data, B, .verbose = FALSE, .parallel = TRUE)
-#   # this_boot_results = run_analysis(data, 2, .verbose = FALSE)
-#   save(this_boot_results, file = paste0(results_prefix, "/i=", i, ".RData"))
-#
-#   return(this_boot_results)
-# }
-
-
-
-
-
-parallel::stopCluster(my_cluster)
-
-
-
-cat("\n")
-runtime = tictoc::toc()
-
-# save(runtime, file = external_runtime_prefix)

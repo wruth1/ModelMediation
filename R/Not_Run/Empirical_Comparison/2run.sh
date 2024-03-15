@@ -1,8 +1,8 @@
 #!/bin/bash
-#SBATCH --time=14:0:0
+#SBATCH --time=2:0:0
 #SBATCH --ntasks=48
 #SBATCH --mem-per-cpu=2000M
-#SBATCH --array=23,24,30,31,32,33,34,35
+#SBATCH --array=10-16
 #SBATCH --output="./output/%A_%a.out"
 #SBATCH --mail-user=wruth@sfu.ca
 #SBATCH --mail-type=END

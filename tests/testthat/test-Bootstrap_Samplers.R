@@ -11,7 +11,7 @@ data_npar = one_non_parametric_sample(data)
 mod_Y = fit_mod_Y(data)
 mod_M = fit_mod_M(data)
 
-data_par = one_parametric_resample(mod_Y, mod_M)
+data_par = one_parametric_sample(mod_Y, mod_M)
 
 
 

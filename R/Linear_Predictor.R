@@ -51,18 +51,6 @@ make_REs <- function(Gamma){
 }
 
 
-lin_pred_RE_contrib <- function(data_ran, Gamma, add_intercept = TRUE, return_REs = FALSE){
-  REs = make_REs(Gamma)
-  contrib = lin_pred_contrib(data_ran, REs, add_intercept)
-
-  if(return_REs){
-    output = list(contrib = contrib, REs = REs)
-  } else{
-    output = contrib
-  }
-  return(output)
-}
-
 
 
 #' Compute the linear predictor based on provided datasets and parameters
@@ -138,22 +126,24 @@ get_lin_preds <- function(data_fix, data_ran, beta, Gamma, add_intercept = NULL,
 
 # Some extra utilities ----
 
-get_lin_preds_RE_cov <- function(data_fix, data_ran, beta_fix, Gamma){
-  contrib_fix = lin_pred_contrib(data_fix, beta_fix)
-  ran_effs = make_REs(Gamma)
-  contrib_ran = lin_pred_contrib(data_ran, ran_effs, add_intercept_ran)
+# These only get used by other simulators which never get called. I must have thought this was a good idea at some point, but they're not currently being used anywhere.
 
-  lin_preds = contrib_fix + contrib_ran
-  return(lin_preds)
-}
-
-get_lin_preds_RE_vec <- function(data_fix, data_ran, beta_fix, beta_ran){
-  contrib_fix = lin_pred_contrib(data_fix, beta_fix)
-  contrib_ran = lin_pred_contrib(data_ran, beta_ran, add_intercept_ran)
-
-  lin_preds = contrib_fix + contrib_ran
-  return(lin_preds)
-}
+# get_lin_preds_RE_cov <- function(data_fix, data_ran, beta_fix, Gamma){
+#   contrib_fix = lin_pred_contrib(data_fix, beta_fix)
+#   ran_effs = make_REs(Gamma)
+#   contrib_ran = lin_pred_contrib(data_ran, ran_effs, add_intercept_ran)
+#
+#   lin_preds = contrib_fix + contrib_ran
+#   return(lin_preds)
+# }
+#
+# get_lin_preds_RE_vec <- function(data_fix, data_ran, beta_fix, beta_ran){
+#   contrib_fix = lin_pred_contrib(data_fix, beta_fix)
+#   contrib_ran = lin_pred_contrib(data_ran, beta_ran, add_intercept_ran)
+#
+#   lin_preds = contrib_fix + contrib_ran
+#   return(lin_preds)
+# }
 
 
 

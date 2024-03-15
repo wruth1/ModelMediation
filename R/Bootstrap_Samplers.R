@@ -52,8 +52,8 @@ one_non_parametric_sample <- function(data){
 #' mod_Y = fit_mod_Y(data)
 #' mod_M = fit_mod_M(data)
 #'
-#' one_parametric_resample(mod_Y, mod_M)
-one_parametric_resample <- function(mod_Y, mod_M){
+#' one_parametric_sample(mod_Y, mod_M)
+one_parametric_sample <- function(mod_Y, mod_M){
   # Start with M ----
 
   ## Compute contribution to the linear predictor of the fixed and random effects separately ----
@@ -207,8 +207,8 @@ get_boot_inds <- function(data){
 #' mod_Y = fit_mod_Y(data)
 #' mod_M = fit_mod_M(data)
 #'
-#' one_semi_parametric_resample(mod_Y, mod_M)
-one_semi_parametric_resample <- function(mod_Y, mod_M){
+#' one_semi_parametric_sample(mod_Y, mod_M)
+one_semi_parametric_sample <- function(mod_Y, mod_M){
 
   # First, generate indices for bootstrap sample from each group ----
   data_obs = stats::model.frame(mod_M)

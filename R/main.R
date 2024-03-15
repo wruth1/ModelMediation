@@ -1,14 +1,4 @@
 
-# A sample analysis ----
-an_analysis <- function(){
-  n = 100
-  K = 3
-  all_reg_pars = make_all_reg_pars()
-  data = make_validation_data(n, K, all_reg_pars)
-
-  run_analysis(data)
-}
-
 
 #' Generate bootstrap samples, compute estimates, and construct CIs
 #'
@@ -49,22 +39,6 @@ run_analysis <- function(data, B, .parallel = FALSE, .verbose = FALSE){
 
   output = list(CIs = all_boot_CIs, boot_results_par = boot_results_par, boot_results_spar = boot_results_spar, boot_results_npar = boot_results_npar)
   return(all_boot_CIs)
-}
-
-
-run_analysis_no_CIs <- function(data, B, .parallel = FALSE, .verbose = FALSE){
-  mod_Y = fit_mod_Y(data)
-  mod_M = fit_mod_M(data)
-
-  boot_results_par = run_bootstrap(B, mod_Y = mod_Y, mod_M = mod_M, boot_type = "par", .parallel = .parallel, .verbose = .verbose)
-
-  boot_results_spar = run_bootstrap(B, mod_Y = mod_Y, mod_M = mod_M, boot_type = "spar", .parallel = .parallel, .verbose = .verbose)
-
-  boot_results_npar = run_bootstrap(B, data = data, boot_type = "npar", .parallel = .parallel, .verbose = .verbose)
-
-
-  output = list(boot_results_par = boot_results_par, boot_results_spar = boot_results_spar, boot_results_npar = boot_results_npar)
-  return(output)
 }
 
 

@@ -1,20 +1,8 @@
 
-# # Get simulation settings from command line arguments
-# setting_number = as.numeric(commandArgs(trailingOnly = TRUE)[1])
-#
-# all_settings = read.table("All_Parameter_Combinations.csv", sep = ",")
-# this_settings = all_settings[setting_number,]
-#
-# n = this_settings[1]
-# K = this_settings[2]
-# B = this_settings[3]
-
-
-
-
-# n = 100
-# K = 3
-# B = 200
+################################################################################
+###          This script runs a Monte Carlo study of my analysis             ###
+### The goal is to estimate coverage probability for the bootstrap intervals ###
+################################################################################
 
 n = 11
 K = 3

@@ -1,0 +1,19 @@
+\documentclass{article}
+
+
+\usepackage{amsmath, amssymb}
+
+
+\begin{document}
+
+\section{Analysis}
+
+The main function which drives our analysis is \texttt{run\_analysis} in the file \texttt{main.R}. This function takes a dataset and a number of bootstrap replicates, \texttt{B}, then runs each flavour of bootstrap sampling on the dataset with \texttt{B} replicates. These individual analyses use the \texttt{run\_bootstrap} function from \texttt{Bootstrap\_Logic.R}. The output of \texttt{run\_analysis} is a list containing three sets of bootstrapped regression coefficients, as well as all the CIs. 
+
+The bootstrap analyses within \texttt{run\_analysis} are performed by the \texttt{run\_bootstrap} function in the \texttt{Bootstrap\_Logic.R} file. This takes a number of bootstrap resamples, \texttt{B}, a dataset, and which type of resampling to use (parametric, non-parametric or semi-parametric). Each individual bootstrap sample is handled by \texttt{one\_bootstrap}, also in \texttt{Bootstrap\_Logic.R}. The \texttt{one\_bootstrap} function calls \texttt{one\_bootstrap\_sample} to generate a bootstrap sample, and \texttt{boot\_samp\_2\_coeffs} to compute regression coefficients for the $M$ and $Y$ models.
+
+The \texttt{boot\_samp\_2\_coeffs} function (in \texttt{boot\_samp\_2\_coeffs.R}) fits regression models for $M$ and $Y$, then extracts the appropriate coefficients by calling \texttt{reg\_coeffs\_for\_mediation}. This latter function returns a data frame containing fixed and mixed effects. The former are obtained by \texttt{fix\_coeffs\_for\_mediation}, and the latter come from \texttt{mix\_coeffs\_for\_mediation}. The fixed effects are obtained pretty easily from fitted \texttt{lme4} objects. The mixed effects are extracted from the fitted models, then re-formatted using \texttt{mix\_coeffs\_2\_data}.
+
+\section{Bootstrap Samplers}
+
+\end{document}

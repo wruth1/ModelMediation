@@ -43,7 +43,6 @@ run_bootstrap <- function(B, data = NULL, mod_Y = NULL, mod_M = NULL, boot_type 
   if(.parallel){
     ## Parallel ----
     all_boot_results = foreach::foreach(i = seq_len(B), .options.snow = DoSNOW_opts) %dopar% {
-      # set.seed(i * 1000)  # Let the user set.seed at a higher level
 
       this_boot_results = one_bootstrap(data, mod_Y, mod_M, boot_type)
       this_boot_results$b = i
@@ -53,7 +52,6 @@ run_bootstrap <- function(B, data = NULL, mod_Y = NULL, mod_M = NULL, boot_type 
   } else {
     ## Serial ----
     all_boot_results = foreach::foreach(i = seq_len(B)) %do% {
-      # set.seed(i * 1000)  # Let the user set.seed at a higher level
 
       this_boot_results = one_bootstrap(data, mod_Y, mod_M, boot_type)
       this_boot_results$b = i
@@ -158,9 +156,9 @@ one_bootstrap_sample <- function(data = NULL, mod_Y = NULL, mod_M = NULL, boot_t
   }
 
   if(boot_type == "par"){
-      return(one_parametric_resample(mod_Y, mod_M))
+      return(one_parametric_sample(mod_Y, mod_M))
   } else if(boot_type == "spar"){
-      return(one_semi_parametric_resample(mod_Y, mod_M))
+      return(one_semi_parametric_sample(mod_Y, mod_M))
   } else{
     return(one_non_parametric_sample(data))
   }

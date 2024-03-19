@@ -75,6 +75,7 @@ fit_mod_M <- function(data){
 #' - Must contain columns named Y, M, X and group
 #' - May also contain other columns. Each such extra column must be a confounder.      !!!! I'm not sure yet whether I want to require that these columns be named C1, C2, ...
 #' - Groups must be labelled G1, G2, ...
+#' - Must be sorted by group label
 #'
 #' @param data_formal A formal data frame. See Details for requirements.
 #'
@@ -107,6 +108,7 @@ fit_mod_M_formal <- function(data_formal){
 #' - Must contain columns named Y, M, X and group
 #' - May also contain other columns. Each such extra column must be a confounder.      !!!! I'm not sure yet whether I want to require that these columns be named C1, C2, ...
 #' - Groups must be labelled G1, G2, ...
+#' - Must be sorted by group label
 #'
 #' @param data_formal A formal data frame. See Details for requirements.
 #'

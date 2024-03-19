@@ -5,7 +5,9 @@
 .httr-oauth
 .DS_Store
 .quarto
-# Data/*
+Data/*
+!Data/*.zip
+!Data/From_Cluster
 Data/Timing
 ModelMediation.code-workspace
 inst/doc

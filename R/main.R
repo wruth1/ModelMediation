@@ -59,15 +59,15 @@ run_analysis_parallel <- function(data, B, cl, .verbose = FALSE){
   mod_M = fit_mod_M(data)
 
   print("Running parametric bootstrap")
-  boot_results_par = run_bootstrap(B, mod_Y = mod_Y, mod_M = mod_M, boot_type = "par", .parallel = .parallel, .verbose = .verbose)
+  boot_results_par = run_bootstrap_parallel(B, cl, mod_Y = mod_Y, mod_M = mod_M, boot_type = "par", .verbose = .verbose)
   cat("\n")
 
   print("Running semi-parametric bootstrap")
-  boot_results_spar = run_bootstrap(B, mod_Y = mod_Y, mod_M = mod_M, boot_type = "spar", .parallel = .parallel, .verbose = .verbose)
+  boot_results_spar = run_bootstrap_parallel(B, cl, mod_Y = mod_Y, mod_M = mod_M, boot_type = "spar", .verbose = .verbose)
   cat("\n")
 
   print("Running non-parametric bootstrap")
-  boot_results_npar = run_bootstrap(B, data = data, boot_type = "npar", .parallel = .parallel, .verbose = .verbose)
+  boot_results_npar = run_bootstrap_parallel(B, cl, data = data, boot_type = "npar", .verbose = .verbose)
   cat("\n")
 
   boot_CIs_par = get_boot_CIs(boot_results_par, mod_Y=mod_Y, mod_M=mod_M)

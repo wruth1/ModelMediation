@@ -37,10 +37,51 @@ run_analysis <- function(data, B, .parallel = FALSE, .verbose = FALSE){
   boot_CIs_npar$boot_type = "npar"
   all_boot_CIs = rbind(boot_CIs_par, boot_CIs_spar, boot_CIs_npar)
 
-  output = list(CIs = all_boot_CIs, boot_results_par = boot_results_par, boot_results_spar = boot_results_spar, boot_results_npar = boot_results_npar)
+  # output = list(CIs = all_boot_CIs, boot_results_par = boot_results_par, boot_results_spar = boot_results_spar, boot_results_npar = boot_results_npar)
   return(all_boot_CIs)
 }
 
+
+#' Generate bootstrap samples, compute estimates, and construct CIs. Run in parallel using `pbapply`
+#'
+#' @param data Observed dataset.
+#' @param B Number of bootstrap replicates.
+#' @param cl A cluster object
+#' @param .verbose Should progress bars be produced for the two bootstrap analyses?
+#'
+#' @return A data frame containing confidence intervals for each mediation effect, in each group, for all flavours of bootstrap and bootstrap CI.
+#' @export
+#'
+#' @examples
+#' 1+1
+run_analysis_parallel <- function(data, B, cl, .verbose = FALSE){
+  mod_Y = fit_mod_Y(data)
+  mod_M = fit_mod_M(data)
+
+  print("Running parametric bootstrap")
+  boot_results_par = run_bootstrap(B, mod_Y = mod_Y, mod_M = mod_M, boot_type = "par", .parallel = .parallel, .verbose = .verbose)
+  cat("\n")
+
+  print("Running semi-parametric bootstrap")
+  boot_results_spar = run_bootstrap(B, mod_Y = mod_Y, mod_M = mod_M, boot_type = "spar", .parallel = .parallel, .verbose = .verbose)
+  cat("\n")
+
+  print("Running non-parametric bootstrap")
+  boot_results_npar = run_bootstrap(B, data = data, boot_type = "npar", .parallel = .parallel, .verbose = .verbose)
+  cat("\n")
+
+  boot_CIs_par = get_boot_CIs(boot_results_par, mod_Y=mod_Y, mod_M=mod_M)
+  boot_CIs_spar = get_boot_CIs(boot_results_spar, mod_Y=mod_Y, mod_M=mod_M)
+  boot_CIs_npar = get_boot_CIs(boot_results_npar, mod_Y=mod_Y, mod_M=mod_M)
+
+  boot_CIs_par$boot_type = "par"
+  boot_CIs_spar$boot_type = "spar"
+  boot_CIs_npar$boot_type = "npar"
+  all_boot_CIs = rbind(boot_CIs_par, boot_CIs_spar, boot_CIs_npar)
+
+  # output = list(CIs = all_boot_CIs, boot_results_par = boot_results_par, boot_results_spar = boot_results_spar, boot_results_npar = boot_results_npar)
+  return(all_boot_CIs)
+}
 
 
 #' Generate bootstrap samples, compute estimates, and construct CIs. Data must be formatted as a formal data frame.

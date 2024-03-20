@@ -69,6 +69,51 @@ run_bootstrap <- function(B, data = NULL, mod_Y = NULL, mod_M = NULL, boot_type 
   return(output)
 }
 
+#' Run a complete bootstrap analysis with `B` bootstrap samples in parallel using `pbapply`
+#'
+#' @param B Number of bootstrap samples.
+#' @param cl A cluster object
+#' @param data Original dataset. Optional for parametric (as long as `mod_Y` and `mod_M` are supplied), required for non-parametric, .
+#' @param mod_Y Regression model for predicting `Y`. Recommended but optional for parametric (as long as `data` is supplied), not used for non-parametric.
+#' @param mod_M Regression model for predicting `M`. Recommended but optional for parametric (as long as `data` is supplied), not used for non-parametric.
+#' @param boot_type Indicates which type of bootstrap should be performed. Options include parametric (`par`), non-parametric (`npar`), and semi-parametric (`spar`).
+#' @param .verbose Should a progress bar be printed?
+#'
+#' @return Standard output from a bootstrap analysis. Ready to be used for constructing confidence intervals.
+#' @export
+#'
+#' @examples
+#' B = 2
+#' n = 20
+#' K = 3
+#' all_reg_pars = make_all_reg_pars()
+#' data = make_validation_data(n, K, all_reg_pars)
+#'
+#' mod_Y = fit_mod_Y(data)
+#' mod_M = fit_mod_M(data)
+#'
+#' run_bootstrap(B, mod_Y = mod_Y, mod_M = mod_M, boot_type = "par", .parallel = FALSE)
+#'
+#' run_bootstrap(B, data = data, boot_type = "npar", .parallel = FALSE)
+run_bootstrap_parallel <- function(B, cl, data = NULL, mod_Y = NULL, mod_M = NULL, boot_type = c("par", "npar", "spar"), .verbose = TRUE){
+  check_bootstrap_inputs(data, mod_Y, mod_M, boot_type)
+
+  # Run B bootstrap analyses ----
+
+  all_boot_results = pblapply(seq_len(B), function(i){
+
+    this_boot_results = one_bootstrap(data, mod_Y, mod_M, boot_type)
+    this_boot_results$b = i
+
+    return(this_boot_results)
+  }, cl=cl)
+
+  # Format output as a single data frame
+  output = purrr::list_rbind(all_boot_results)
+
+  return(output)
+}
+
 
 
 

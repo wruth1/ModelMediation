@@ -94,7 +94,10 @@ test_boot_results = pbapply::pbsapply(1:num_MC_reps, function(i){
     #tictoc::toc()
 
     # run_analysis_one_bootstrap(real_data, .verbose = TRUE, .parallel = FALSE)
+    
 
+    print(getwd())
+    dir.create(cluster_results_prefix, showWarnings = FALSE, recursive = TRUE)
     save(this_boot_results, file = paste0(cluster_results_prefix, "/i=", i, ".RData"))
     # save(this_boot_results, file = paste0(external_results_prefix, "/i=", i, ".RData"))
 

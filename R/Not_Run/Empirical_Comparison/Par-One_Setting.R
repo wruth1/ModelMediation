@@ -1,7 +1,9 @@
-#
-# # # Get simulation settings from command line arguments
-# setting_number = as.numeric(commandArgs(trailingOnly = TRUE)[1])
-#
+
+# Get simulation settings from command line arguments
+array_index = as.numeric(commandArgs(trailingOnly = TRUE)[1])
+# array_index = 1
+
+
 # # # The actual grid of parameter values I want to evaluate coverage probabilities on
 # load("all_par_combinations.RData")
 # this_par_comb = all_pars[setting_number,]
@@ -17,9 +19,9 @@
 # B = this_par_comb$B
 
 
-n = 500
-K = 10
-B = 500
+# n = 500
+# K = 10
+# B = 500
 
 
 
@@ -33,9 +35,9 @@ B = 500
 
 devtools::load_all(".")
 
-# n = 40
-# K = 2
-# B = 10
+n = 40
+K = 2
+B = 4
 
 # n = 11
 # K = 3
@@ -87,64 +89,29 @@ clusterEvalQ(my_cluster,{
   devtools::load_all("scratch/ModelMediation/")
 })
 clusterExport(my_cluster, c("n", "K", "B", "all_reg_pars", "cluster_results_prefix"))
+clusterSetRNGStream(my_cluster, iseed = 10000*array_index)
+
 
 
 tictoc::tic()
 
-
-# ### Initialize Progress Bar ----
-# ### Note: DoSNOW_opts is only used if .parallel == T
-# prog = utils::txtProgressBar(max = num_MC_reps, style = 3)
-# prog_update = function(n) utils::setTxtProgressBar(prog, n)
-# DoSNOW_opts = list(progress = prog_update)
-
-
 for(i in 1:num_MC_reps) {
   data = make_validation_data(n, K, all_reg_pars)
 
-  #tictoc::tic()
-  # this_boot_results = run_analysis(data, B, .verbose = FALSE, .parallel = FALSE)
   this_boot_results = run_analysis_parallel(data, B, my_cluster, .verbose = FALSE)
-  #tictoc::toc()
 
-  # run_analysis_one_bootstrap(real_data, .verbose = TRUE, .parallel = FALSE)
 
-  save(this_boot_results, file = paste0(cluster_results_prefix, "/i=", i, ".RData"))
-  # save(this_boot_results, file = paste0(external_results_prefix, "/i=", i, ".RData"))
+  dir.create(cluster_results_prefix, showWarnings = FALSE, recursive = TRUE)
+  save(this_boot_results, file = paste0(cluster_results_prefix, "/Arr_Ind=", array_index, ",i=", i, ".RData"))
 
   return(this_boot_results)
- }
-# })
-
-
-
-# all_boot_results_parallel = foreach::foreach(i = seq_len(num_MC_reps), .options.snow = DoSNOW_opts) %dopar% {
-#   set.seed(i * 1000)
-#
-#   data = make_validation_data(n, K, all_reg_pars)
-#
-#   # tictoc::tic()
-#   this_boot_results = run_analysis(data, B, .verbose = FALSE, .parallel = FALSE)
-#   # this_boot_results = run_analysis(data, B, .verbose = TRUE, .parallel = TRUE)
-#   # this_boot_results = run_analysis(data, B, .verbose = TRUE, .parallel = FALSE)
-#   # tictoc::toc()
-#
-#   # this_boot_results = run_analysis(data, B, .verbose = FALSE, .parallel = TRUE)
-#   # this_boot_results = run_analysis(data, 2, .verbose = FALSE)
-#   save(this_boot_results, file = paste0(results_prefix, "/i=", i, ".RData"))
-#
-#   return(this_boot_results)
-# }
-
-
-
-
+}
 
 parallel::stopCluster(my_cluster)
-
 
 
 cat("\n")
 runtime = tictoc::toc()
 
 save(runtime, file = external_runtime_prefix)
+

@@ -100,7 +100,7 @@ run_bootstrap_parallel <- function(B, cl, data = NULL, mod_Y = NULL, mod_M = NUL
 
   # Run B bootstrap analyses ----
 
-  all_boot_results = pblapply(seq_len(B), function(i){
+  all_boot_results = pbapply::pblapply(seq_len(B), function(i){
 
     this_boot_results = one_bootstrap(data, mod_Y, mod_M, boot_type)
     this_boot_results$b = i

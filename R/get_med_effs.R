@@ -109,9 +109,9 @@ get_med_effs <- function(X_in_Y, M_in_Y, X_in_M){
 # Extract mediation-specific coefficients from vectors of all regression coefficients ----
 
 get_med_coeffs <- function(M_coeffs_mix, Y_coeffs_mix){
-  X_in_M = M_coeffs[2]
-  M_in_Y = Y_coeffs[2]
-  X_in_Y = Y_coeffs[3]
+  X_in_M = M_coeffs_mix[2]
+  M_in_Y = Y_coeffs_mix[2]
+  X_in_Y = Y_coeffs_mix[3]
 
   output = c(X_in_M, M_in_Y, X_in_Y)
   names(output) = c("X_in_M", "M_in_Y", "X_in_Y")

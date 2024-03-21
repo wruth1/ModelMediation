@@ -50,6 +50,7 @@ num_MC_reps = 2
 # num_MC_reps = 144	# = 48 * 3, where 48 is the number of cores in an entire node for Cedar
 
 library(doParallel)
+library(rlang)
 
 
 external_results_prefix = paste0("../../../Data/Timing/boot_results_n=", n, "_K=", K, "_B=", B, "_M=", num_MC_reps)
@@ -69,19 +70,19 @@ all_reg_pars = make_all_reg_pars()
 # Monte Carlo study of bootstrap intervals ----
 
 # # Initialize cluster on my machine ----
-# n_cores = 10
+# n_cores = 2
+# # n_cores = parallel::detectCores() - 1
 # my_cluster = makeCluster(n_cores, type = "PSOCK")
 # registerDoParallel(my_cluster)
 # clusterEvalQ(my_cluster,{
 #   devtools::load_all(".")
 # })
 # clusterExport(my_cluster, c("n", "K", "B", "all_reg_pars"))
+# clusterSetRNGStream(my_cluster, iseed = 10000*array_index)
 
 
 # Initialize Cluster ----
-# n_cores = 10
-# n_cores = parallel::detectCores() - 1
-#n_cores = parallel::detectCores()
+
 nodeslist = unlist(strsplit(Sys.getenv("NODESLIST"), split=" "))
 my_cluster = makeCluster(nodeslist, type = "PSOCK")
 registerDoParallel(my_cluster)
@@ -95,16 +96,57 @@ clusterSetRNGStream(my_cluster, iseed = 10000*array_index)
 
 tictoc::tic()
 
-for(i in 1:num_MC_reps) {
-  data = make_validation_data(n, K, all_reg_pars)
 
+# Generate and analyse many datasets ----
+for(i in 1:num_MC_reps) {
+  ## Make data ----
+  data_and_REs = make_validation_data(n, K, all_reg_pars, return_REs = TRUE)
+  data = data_and_REs$data
+  all_REs = data_and_REs$all_REs
+
+  ## Get true group-specific mediation effects ----
+  M_coeffs_fix = all_reg_pars$beta_M
+  Y_coeffs_fix = all_reg_pars$beta_Y
+
+  true_med_effs_wide = data.frame()
+  for(j in seq_along(all_REs)){
+    this_info = all_REs[[j]]
+    M_coeffs_ran = this_info$M
+    Y_coeffs_ran = this_info$Y
+
+    M_coeffs_mix = M_coeffs_fix + c(M_coeffs_ran, rep(0, times=length(M_coeffs_fix) - length(M_coeffs_ran)))
+    Y_coeffs_mix = Y_coeffs_fix + c(Y_coeffs_ran, rep(0, times=length(Y_coeffs_fix) - length(Y_coeffs_ran)))
+
+    reg_coeffs = get_med_coeffs(M_coeffs_mix, Y_coeffs_mix)
+    med_effs = inject(get_med_effs(!!!reg_coeffs)) %>%     # inject() facilitates the use of !!! to pass function arguments as a vector
+      t() %>% data.frame()
+
+    med_effs$group = paste0("G", j)
+
+    true_med_effs_wide = rbind(true_med_effs_wide, med_effs)
+
+  }
+
+  ## Get true fixed-effect mediation effects ----
+  reg_coeffs_fix = get_med_coeffs(M_coeffs_fix, Y_coeffs_fix)
+  med_effs_fix = inject(get_med_effs(!!!reg_coeffs_fix)) %>%     # inject() facilitates the use of !!! to pass function arguments as a vector
+    t() %>% data.frame() %>% dplyr::mutate(group = "fixed")
+
+  true_med_effs_wide = rbind(true_med_effs_wide, med_effs_fix)
+
+  true_med_effs = true_med_effs_wide %>%  med_effs_wide_2_tall() %>% dplyr::rename(truth = estimate)
+
+
+  ## Run analysis ----
   this_boot_results = run_analysis_parallel(data, B, my_cluster, .verbose = FALSE)
+
+  ## Add true mediation effects ----
+  dplyr::full_join(this_boot_results, true_med_effs, by = c("med_type", "group"))
 
 
   dir.create(cluster_results_prefix, showWarnings = FALSE, recursive = TRUE)
   save(this_boot_results, file = paste0(cluster_results_prefix, "/Arr_Ind=", array_index, ",i=", i, ".RData"))
 
-  return(this_boot_results)
 }
 
 parallel::stopCluster(my_cluster)

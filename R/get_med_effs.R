@@ -54,6 +54,8 @@ get_med_effs_DF <- function(all_reg_coeffs){
   return(output)
 }
 
+
+
 #' @rdname mult_med_effs
 #' @export
 get_med_effs_lme4 <- function(mod_Y, mod_M){
@@ -62,6 +64,8 @@ get_med_effs_lme4 <- function(mod_Y, mod_M){
 
   return(all_med_effs)
 }
+
+
 
 
 # Reformat mediation effects from output of get_med_effs_X() to input for get_boot_CIs()
@@ -100,3 +104,19 @@ get_med_effs <- function(X_in_Y, M_in_Y, X_in_M){
 
 
 # dplyr::filter(boot_output, group=="fixed")
+
+
+# Extract mediation-specific coefficients from vectors of all regression coefficients ----
+
+get_med_coeffs <- function(M_coeffs_mix, Y_coeffs_mix){
+  X_in_M = M_coeffs[2]
+  M_in_Y = Y_coeffs[2]
+  X_in_Y = Y_coeffs[3]
+
+  output = c(X_in_M, M_in_Y, X_in_Y)
+  names(output) = c("X_in_M", "M_in_Y", "X_in_Y")
+  return(output)
+}
+
+
+

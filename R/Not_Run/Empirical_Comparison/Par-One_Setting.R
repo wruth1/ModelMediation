@@ -19,9 +19,9 @@ array_index = as.numeric(commandArgs(trailingOnly = TRUE)[1])
 # B = this_par_comb$B
 
 
-# n = 500
-# K = 10
-# B = 500
+n = 1000
+K = 9
+B = 2
 
 
 
@@ -35,17 +35,17 @@ array_index = as.numeric(commandArgs(trailingOnly = TRUE)[1])
 
 devtools::load_all(".")
 
-n = 40
-K = 2
-B = 4
+# n = 40
+# K = 2
+# B = 4
 
 # n = 11
 # K = 3
 # B = 5
 
 
-# num_MC_reps = 256
-num_MC_reps = 2
+num_MC_reps = 1
+# num_MC_reps = 2
 # num_MC_reps = 50
 # num_MC_reps = 144	# = 48 * 3, where 48 is the number of cores in an entire node for Cedar
 
@@ -144,10 +144,12 @@ for(i in 1:num_MC_reps) {
   dplyr::full_join(this_boot_results, true_med_effs, by = c("med_type", "group"))
 
 
-  dir.create(cluster_results_prefix, showWarnings = FALSE, recursive = TRUE)
-  save(this_boot_results, file = paste0(cluster_results_prefix, "/Arr_Ind=", array_index, ",i=", i, ".RData"))
+  dir.create(external_results_prefix, showWarnings = FALSE, recursive = TRUE)
+  save(this_boot_results, file = paste0(external_results_prefix, "/Arr_Ind=", array_index, ",i=", i, ".RData"))
 
 }
+
+print(cluster_results_prefix)
 
 parallel::stopCluster(my_cluster)
 

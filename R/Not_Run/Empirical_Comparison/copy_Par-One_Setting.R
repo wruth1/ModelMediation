@@ -21,7 +21,7 @@ array_index = as.numeric(commandArgs(trailingOnly = TRUE)[1])
 
 n = 1000
 K = 9
-B = 1000
+B = 1008
 
 
 
@@ -35,7 +35,7 @@ B = 1000
 
 devtools::load_all(".")
 
-# n = 50
+# n = 40
 # K = 2
 # B = 4
 
@@ -44,17 +44,16 @@ devtools::load_all(".")
 # B = 4
 
 
-# num_MC_reps = 1
+num_MC_reps = 1
 # num_MC_reps = 2
 # num_MC_reps = 50
 # num_MC_reps = 144	# = 48 * 3, where 48 is the number of cores in an entire node for Cedar
-num_MC_reps = 1008	# = 48 * 21
 
 library(doParallel)
 library(rlang)
 
 
-external_results_prefix = paste0("../../../Data/Timing/boot_results_n=", n, "_K=", K, "_B=", B, "_M=", num_MC_reps)
+external_results_prefix = paste0("Boot_Dists/boot_results_n=", n, "_K=", K, "_B=", B, "_M=", num_MC_reps)
 dir.create(external_results_prefix, showWarnings = FALSE, recursive = TRUE)
 external_runtime_prefix = paste0("Runtimes/n=", n, "_K=", K, "_B=", B, "_M=", num_MC_reps, ".RData")
 dir.create("Runtimes", showWarnings = FALSE, recursive = TRUE)
@@ -99,8 +98,7 @@ tictoc::tic()
 
 
 # Generate and analyse many datasets ----
-all_results = pbapply::pblapply(1:num_MC_reps, function(i){
-
+for(i in 1:num_MC_reps) {
   ## Make data ----
   data_and_REs = make_validation_data(n, K, all_reg_pars, return_REs = TRUE)
   data = data_and_REs$data
@@ -139,20 +137,19 @@ all_results = pbapply::pblapply(1:num_MC_reps, function(i){
   true_med_effs = true_med_effs_wide %>%  med_effs_wide_2_tall() %>% dplyr::rename(truth = estimate)
 
 
-  # Run analysis ----
-  fitted_med_effs = boot_samp_2_coeffs(data) %>% get_med_effs_DF() %>% med_effs_wide_2_tall()
-
+  ## Run analysis ----
+  this_boot_results = run_analysis_parallel(data, B, my_cluster, .verbose = FALSE)
 
   ## Add true mediation effects ----
-  results_with_truth = dplyr::full_join(fitted_med_effs, true_med_effs, by = c("med_type", "group"))
-  return(results_with_truth)
-
-  # dir.create(external_results_prefix, showWarnings = FALSE, recursive = TRUE)
-  # save(results_with_truth, file = paste0(external_results_prefix, "/Arr_Ind=", array_index, ",i=", i, ".RData"))
-
-}, cl = my_cluster) %>% purrr::list_rbind()
+  results_with_truth = dplyr::full_join(this_boot_results, true_med_effs, by = c("med_type", "group"))
 
 
+  dir.create(external_results_prefix, showWarnings = FALSE, recursive = TRUE)
+  save(results_with_truth, file = paste0(external_results_prefix, "/Arr_Ind=", array_index, ",i=", i, ".RData"))
+
+}
+
+print(cluster_results_prefix)
 
 parallel::stopCluster(my_cluster)
 
@@ -162,4 +159,3 @@ runtime = tictoc::toc()
 
 save(runtime, file = external_runtime_prefix)
 
-save(all_results, file = paste0("sim_med_effs/n=", n, "_K=", K, "_B=", B, ".RData"))

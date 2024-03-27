@@ -30,6 +30,13 @@ fit_mod_Y <- function(data){
 
 
 
+fit_mod_Y_bad <- function(data){
+  suppressMessages(
+    lme4::glmer(Y ~ M + X + C1 + C2 + (M + X | group), data = data, family = "binomial")
+  )
+}
+
+
 
 #' Fit a regression model to the observed data with mediator as response variable
 #'

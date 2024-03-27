@@ -84,6 +84,44 @@ run_analysis_parallel <- function(data, B, cl, .verbose = FALSE){
 }
 
 
+
+
+
+
+
+# Run all three flavours of bootstrap. Return mediation effects, not CIs
+run_analysis_boot_dist <- function(data, B, cl, .verbose = FALSE){
+  mod_Y = fit_mod_Y(data)
+  mod_M = fit_mod_M(data)
+
+  print("Running parametric bootstrap")
+  boot_results_par = run_bootstrap_parallel(B, cl, mod_Y = mod_Y, mod_M = mod_M, boot_type = "par", .verbose = .verbose) %>%
+    get_med_effs_DF() %>% dplyr::mutate(boot_type = "par")
+  cat("\n")
+
+  print("Running semi-parametric bootstrap")
+  boot_results_spar = run_bootstrap_parallel(B, cl, mod_Y = mod_Y, mod_M = mod_M, boot_type = "spar", .verbose = .verbose) %>%
+    get_med_effs_DF() %>% dplyr::mutate(boot_type = "spar")
+  cat("\n")
+
+  print("Running non-parametric bootstrap")
+  boot_results_npar = run_bootstrap_parallel(B, cl, data = data, boot_type = "npar", .verbose = .verbose) %>%
+    get_med_effs_DF() %>% dplyr::mutate(boot_type = "npar")
+  cat("\n")
+
+
+  all_boot_results = rbind(boot_results_par, boot_results_spar, boot_results_npar)
+
+  return(all_boot_results)
+}
+
+
+
+
+
+
+
+
 #' Generate bootstrap samples, compute estimates, and construct CIs. Data must be formatted as a formal data frame.
 #'
 #' @param data_formal A formal data frame.

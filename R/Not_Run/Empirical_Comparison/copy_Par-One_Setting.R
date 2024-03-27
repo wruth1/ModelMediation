@@ -138,7 +138,8 @@ for(i in 1:num_MC_reps) {
 
 
   ## Run analysis ----
-  this_boot_results = run_analysis_parallel(data, B, my_cluster, .verbose = FALSE)
+  this_boot_results = run_analysis_boot_dist(data, B, my_cluster, .verbose = FALSE) %>%
+    tidyr::pivot_longer(c("de", "ie", "te"), names_to = "med_type", values_to = "estimate")
 
   ## Add true mediation effects ----
   results_with_truth = dplyr::full_join(this_boot_results, true_med_effs, by = c("med_type", "group"))

@@ -19,9 +19,10 @@ array_index = as.numeric(commandArgs(trailingOnly = TRUE)[1])
 # B = this_par_comb$B
 
 
-n = 1000
+n = 5000
 K = 9
-B = 1008
+# B = 1008
+B = 240
 
 
 
@@ -99,6 +100,8 @@ tictoc::tic()
 
 # Generate and analyse many datasets ----
 for(i in 1:num_MC_reps) {
+  set.seed(i)
+
   ## Make data ----
   data_and_REs = make_validation_data(n, K, all_reg_pars, return_REs = TRUE)
   data = data_and_REs$data

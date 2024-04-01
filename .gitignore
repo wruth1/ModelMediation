@@ -1,10 +1,16 @@
 .Rproj.user
 .Rhistory
 .Rdata
+.RData
 .httr-oauth
 .DS_Store
 .quarto
 Data/*
+!Data/*.zip
+!Data/From_Cluster
+Data/Timing
 ModelMediation.code-workspace
 inst/doc
-R/Not_Run/Empirical_Comparison/Runtimes/*
+# R/Not_Run/Empirical_Comparison/Runtimes/*
+R/Not_Run/Empirical_Comparison/output/*
+!R/Not_Run/Empirical_Comparison/Runtimes/*

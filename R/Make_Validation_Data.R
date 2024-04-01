@@ -212,22 +212,24 @@ make_Y_validation <-
 
 # Generic simulators for GLMM response ----
 
-make_response_RE_cov <-
-  function(data_fix, data_ran, beta_fix, Gamma) {
-    lin_preds = get_lin_preds_RE_cov(data_fix, data_ran, beta_fix, Gamma)
-    all_probs = boot::inv.logit(lin_preds)
-    response = stats::rbinom(nrow(data_fix), 1, all_probs)
-    return(response)
-  }
+# I must have thought these were a good idea at some point, but they're not currently being used.
 
-
-make_response_RE_vec <-
-  function(data_fix, data_ran, beta_fix, beta_ran) {
-    lin_preds = get_lin_preds_RE_vec(data_fix, data_ran, beta_fix, beta_ran)
-    all_probs = boot::inv.logit(lin_preds)
-    response = stats::rbinom(nrow(data_fix), 1, all_probs)
-    return(response)
-  }
+# make_response_RE_cov <-
+#   function(data_fix, data_ran, beta_fix, Gamma) {
+#     lin_preds = get_lin_preds_RE_cov(data_fix, data_ran, beta_fix, Gamma)
+#     all_probs = boot::inv.logit(lin_preds)
+#     response = stats::rbinom(nrow(data_fix), 1, all_probs)
+#     return(response)
+#   }
+#
+#
+# make_response_RE_vec <-
+#   function(data_fix, data_ran, beta_fix, beta_ran) {
+#     lin_preds = get_lin_preds_RE_vec(data_fix, data_ran, beta_fix, beta_ran)
+#     all_probs = boot::inv.logit(lin_preds)
+#     response = stats::rbinom(nrow(data_fix), 1, all_probs)
+#     return(response)
+#   }
 
 
 

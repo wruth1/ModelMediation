@@ -1,25 +1,25 @@
 
 
-# This functionality is tested in test-get_med_effs_binY_binM.R
+basic_output = get_med_effs(0,0,0)
 
-#
-#
-# X_in_Y = 0
-# M_in_Y = 0
-# X_in_M = 0
-#
-# trivial_med_effs = get_med_effs(X_in_Y, M_in_Y, X_in_M)
-#
-#
-# test_that("Size of output is correct",{
-#   expect_equal(length(trivial_med_effs), 3)
-# })
-#
-# test_that("Trivial mediation effects are computed correctly",{
-#   expect_equal(as.numeric(trivial_med_effs), c(1,1,1))
-# })
-#
-# test_that("Names of mediation effects are correct",{
-#   med_eff_names = names(trivial_med_effs)
-#   expect_equal(med_eff_names, c("de", "ie", "te"))
-# })
+test_that("Output of get_med_effs is named correctly", {
+  expect_equal(names(basic_output), c("de", "ie", "te"))
+})
+
+test_that("Degenerate mediation effects are computed correctly", {
+  expect_equal(as.numeric(basic_output), c(1,1,1))
+})
+
+
+some_output = get_med_effs(log(2), log(2), 2)
+
+test_that("More complicated mediation effects are computed correctly",{
+  expect_equal(as.numeric(some_output), c(2, 4, 8))
+})
+
+
+neg_output = get_med_effs(-log(2), -log(2), 2)
+
+test_that("Negative regression coefficients are handled correctly",{
+  expect_equal(as.numeric(neg_output), c(1/2, 1/4, 1/8))
+})

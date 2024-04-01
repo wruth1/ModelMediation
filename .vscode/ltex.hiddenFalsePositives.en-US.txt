@@ -1,0 +1,1 @@
+{"rule":"INDEPENDENTLY_FROM_OF","sentence":"^\\QThe random effects for each country are sampled independently from these specified normal distributions.\\E$"}

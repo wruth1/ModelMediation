@@ -23,10 +23,18 @@
 #' fit_mod_Y(data)
 fit_mod_Y <- function(data){
   suppressMessages(
-    lme4::glmer(Y ~ M + X + C1 + C2 + (M + X | group), data = data, family = "binomial")
+    lme4::glmer(Y ~ M + X + C1 + C2 + (M + X | group), data = data, family = "binomial",
+                control = lme4::glmerControl(optimizer = "bobyqa", optCtrl = list(maxfun = 2e5)))
   )
 }
 
+
+
+fit_mod_Y_bad <- function(data){
+  suppressMessages(
+    lme4::glmer(Y ~ M + X + C1 + C2 + (M + X | group), data = data, family = "binomial")
+  )
+}
 
 
 
@@ -46,7 +54,8 @@ fit_mod_Y <- function(data){
 #' fit_mod_M(data)
 fit_mod_M <- function(data){
   suppressMessages(
-    lme4::glmer(M ~ X + C1 + C2 + (X | group), data = data, family = "binomial")
+    lme4::glmer(M ~ X + C1 + C2 + (X | group), data = data, family = "binomial",
+                control = lme4::glmerControl(optimizer = "bobyqa", optCtrl = list(maxfun = 2e5)))
   )
 }
 
@@ -75,6 +84,7 @@ fit_mod_M <- function(data){
 #' - Must contain columns named Y, M, X and group
 #' - May also contain other columns. Each such extra column must be a confounder.      !!!! I'm not sure yet whether I want to require that these columns be named C1, C2, ...
 #' - Groups must be labelled G1, G2, ...
+#' - Must be sorted by group label
 #'
 #' @param data_formal A formal data frame. See Details for requirements.
 #'
@@ -91,9 +101,11 @@ fit_mod_M <- function(data){
 fit_mod_M_formal <- function(data_formal){
   suppressMessages(
     if("q8.pcis_medium" %in% colnames(data_formal)){
-      lme4::glmer(M ~ . - Y - group + (X + q8.pcis_medium| group), data = data_formal, family = "binomial")
+      lme4::glmer(M ~ . - Y - group + (X + q8.pcis_medium| group), data = data_formal, family = "binomial",
+                  control = lme4::glmerControl(optimizer = "bobyqa", optCtrl = list(maxfun = 2e5)))
     } else{
-      lme4::glmer(M ~ . - Y - group + (X | group), data = data_formal, family = "binomial")
+      lme4::glmer(M ~ . - Y - group + (X | group), data = data_formal, family = "binomial",
+                  control = lme4::glmerControl(optimizer = "bobyqa", optCtrl = list(maxfun = 2e5)))
     }
   )
 }
@@ -107,6 +119,7 @@ fit_mod_M_formal <- function(data_formal){
 #' - Must contain columns named Y, M, X and group
 #' - May also contain other columns. Each such extra column must be a confounder.      !!!! I'm not sure yet whether I want to require that these columns be named C1, C2, ...
 #' - Groups must be labelled G1, G2, ...
+#' - Must be sorted by group label
 #'
 #' @param data_formal A formal data frame. See Details for requirements.
 #'
@@ -123,9 +136,11 @@ fit_mod_M_formal <- function(data_formal){
 fit_mod_Y_formal <- function(data_formal){
   suppressMessages(
     if("q8.pcis_medium" %in% colnames(data_formal)){
-      lme4::glmer(Y ~ . - group + (M+ X + q8.pcis_medium | group), data = data_formal, family = "binomial")
+      lme4::glmer(Y ~ . - group + (M+ X + q8.pcis_medium | group), data = data_formal, family = "binomial",
+                  control = lme4::glmerControl(optimizer = "bobyqa", optCtrl = list(maxfun = 2e5)))
     } else{
-      lme4::glmer(Y ~ . - group + (M + X | group), data = data_formal, family = "binomial")
+      lme4::glmer(Y ~ . - group + (M + X | group), data = data_formal, family = "binomial",
+                  control = lme4::glmerControl(optimizer = "bobyqa", optCtrl = list(maxfun = 2e5)))
     }
   )
 }

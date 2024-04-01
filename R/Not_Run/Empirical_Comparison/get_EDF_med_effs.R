@@ -55,6 +55,7 @@ devtools::load_all(".")
 # num_MC_reps = 50
 # num_MC_reps = 144	# = 48 * 3, where 48 is the number of cores in an entire node for Cedar
 num_MC_reps = 1008	# = 48 * 21
+# num_MC_reps = 1005	# = 15 * 67, where 15 is 1 less than the number of (logical) cores on my machine
 
 
 
@@ -110,6 +111,11 @@ all_results = pbapply::pblapply(1:num_MC_reps, function(i){
   data_and_REs = make_validation_data(n, K, all_reg_pars, return_REs = TRUE)
   data = data_and_REs$data
   all_REs = data_and_REs$all_REs
+
+
+  fit_mod_Y(data)
+  fit_mod_Y_bad(data)
+  fit_mod_M(data)
 
   ## Get true group-specific mediation effects ----
   M_coeffs_fix = all_reg_pars$beta_M
@@ -171,47 +177,3 @@ save(all_results, file = paste0("sim_med_effs/n=", n, "_K=", K, "_B=", B, ".RDat
 
 
 
-# # Process output ----
-#
-# ## Load results ----
-# load(file = paste0("R/Not_Run/Empirical_Comparison/sim_med_effs/n=", n, "_K=", K, "_B=", B, ".RData"))
-#
-# ## Make plots ----
-#
-# ### Fixed effects ----
-#
-# data_plot = all_results %>% filter(group == "fixed")
-#
-#
-# ggplot(data_plot, aes(x = estimate)) +
-#   geom_histogram() +
-#   facet_wrap(~med_type) +
-#   geom_vline(aes(xintercept = truth), color = "red") +
-#   labs(title = "Monte Carlo Sampling Distribution - Fixed Effects", x = "Estimate")
-#
-# ggplot(data_plot, aes(x = estimate)) +
-#   geom_histogram() +
-#   facet_wrap(~med_type, scales = "free") +
-#   geom_vline(aes(xintercept = truth), color = "red") +
-#   labs(title = "Monte Carlo Sampling Distribution - Fixed Effects", x = "Estimate")
-#
-#
-#
-# ### Group-specific effects ----
-#
-# data_group1 = all_results %>% filter(group == "G1") %>% mutate(centered = estimate - truth) %>% filter(abs(centered) < 50)
-#
-# ggplot(data_group1, aes(x = centered)) +
-#   geom_histogram() +
-#   facet_wrap(~med_type) +
-#   geom_vline(xintercept = 0, color = "red") +
-#   labs(title = "Monte Carlo Sampling Distribution - Group 1", x = "Estimate")
-#
-# ggplot(data_group1, aes(x = centered)) +
-#   geom_histogram() +
-#   facet_wrap(~med_type, scales = "free") +
-#   geom_vline(xintercept = 0, color = "red") +
-#   labs(title = "Monte Carlo Sampling Distribution - Group 1", x = "Estimate")
-#
-#
-# which(data_group1$centered > 50, arr.ind = TRUE)

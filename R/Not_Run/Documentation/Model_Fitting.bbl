@@ -1,0 +1,31 @@
+\begin{thebibliography}{}
+
+\bibitem[Demidenko, 2004]{Dem04}
+Demidenko, E. (2004).
+\newblock {\em Mixed Models: Theory and Applications}.
+\newblock Wiley.
+
+\bibitem[Maestrini et~al., 2024]{Mae24}
+Maestrini, L., Hui, F. K.~C., and Welsh, A.~H. (2024).
+\newblock Restricted maximum likelihood estimation in generalized linear
+  models.
+\newblock {\em arXiv}, (2402.12719).
+
+\bibitem[McCullagh and Nelder, 1989]{McC89}
+McCullagh, P. and Nelder, J.~A. (1989).
+\newblock {\em Generalized Linear Models}.
+\newblock Chapman \& Hall/CRC, 2nd edition.
+
+\bibitem[Walker et~al., 2024]{Wal24}
+Walker, S.~C., Christensen, R. H.~B., Bates, D., Bolker, B.~M., and
+  M\"{a}chler, M. (2024).
+\newblock Fitting generalized linear mixed-effects models using \texttt{lme4}.
+\newblock
+  \url{https://github.com/lme4/lme4/blob/master/misc/glmer_JSS/glmer.pdf}.
+
+\bibitem[Weiser, 2023]{Wei23}
+Weiser, C. (2023).
+\newblock {\em \texttt{mvQuad}: Methods for Multivariate Quadrature.}
+\newblock (R package version 1.0-8).
+
+\end{thebibliography}

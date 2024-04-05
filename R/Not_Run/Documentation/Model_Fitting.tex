@@ -15,7 +15,7 @@
 \DeclareMathOperator*{\argmax}{arg\,max}
 \DeclareMathOperator*{\argmin}{arg\,min}
 
-\title{Notes on How GLMMs are Fit to Data}
+\title{Notes on Maximum Likelihood Estimation for GLMMs}
 \author{William Ruth}
 \date{}
 
@@ -57,36 +57,12 @@ While it's a bit cumbersome to articulate the equivalence between this group-wis
 I will mostly stick to the clustered data formulation of the model, but might jump back and forth sometimes. Hopefully, what I mean will be clear from context.
 
 
-\section{Maximizing the Likelihood: \texttt{lme4}}
+\section{The \texttt{glmer} Function in \texttt{lme4}}
 \label{sec:lme4}
 
-The \texttt{lme4} package in \texttt{R} includes a function called \texttt{glmer}, which fits GLMMs to data. This function uses a Laplace approximation to the integral in (\ref{eq:fy_int}), which is then maximized. We follow the presentation in Section 7.7 of \citet{Dem04}. First, maximize $f_{Y,U}$ over $u$ to get the mode, $u_*$. Next, we use the multivariate Laplace approximation to the integral in (\ref{eq:fy_int}). The general form of this approximation is
-%
-\begin{align}
-    \int_{\bR^q} e^{h(u)} du &\approx (2 \pi)^{Q/2} e^{h_*} \left| \left.  - \nabla^2_u h(u) \right|_{u = u_*} \right|^{-1/2} \mathrm{, or}\\
-    \log \int_{\bR^q} e^{h(u)} du & \approx \frac{Q}{2} \log(2\pi) + h_* - \frac{1}{2} \log \left| \left.  - \nabla^2_u h(u) \right|_{u = u_*} \right| \label{eq:lap_form}
-\end{align}
-%
-where $u_*$ is the maximizer of $h$, and $h_* = h(u_*)$ is the maximum value. Specializing to our problem, we write $\ell_{Y|U}(y, u)$ for the conditional log-likelihood of an observation $y$, given the relevant group's random effects, $U^{(k)}=u^{(k)}$. Then the function $h$ to be maximized is 
-%
-\begin{align}
-    h(u) &= h(u^{(1)}, \ldots, u^{(K)})\\
-    &= \sum_{k=1}^K \sum_{n=1}^{N_k} \ell_{Y|U}(y_i^{(k)}, u^{(k)}) - \frac{1}{2} \sum_{k=1}^K (u^{(k)})' \Sigma^{-1} u^{(k)} \label{eq:lap_obj}
-\end{align}
-%
-where $N_K$ is the number of observations in group $K$. Conveniently, $h$ can be maximized analytically, giving the maximizer $u_* = (u^{(1)}_*,\ldots, u^{(K)}_*)$ \textcolor{red}{This isn't maximized analytically. I'm not sure how \citeauthor{Dem04} proposes to find $u_*$. It's probably in his book somewhere}. Substituting $h$ and $u_*$ into (\ref{eq:lap_form}) and letting $\varphi_i^{(k)} = \exp[\beta' X_i^{(k)} + (u_*^{(k)})' Z_i^{(k)}]$, we get the following approximation to the marginal log-likelihood of $Y$:
-%
-\begin{align}
-    \ell_Y(y) &= \sum_{k=1}^K \sum_{i=1}^{N_k} y_i^{(k)} X_i^{(k)} - \sum_{k=1}^K \left[ \sum_{i=1}^{N_k} \log(1 + \varphi_i^{(k)}) + \frac{1}{2} (u_*^{(k)})' \Sigma^{-1} (u_*^{(k)}) \right] \nonumber\\
-    & \frac{K}{2}\log \left| \Sigma^{-1} \right| - \frac{1}{2} \sum_{k=1}^K \log \left| \Sigma^{-1} + \sum_{i=1}^{N_k} \frac{\varphi_i^{(k)}}{\left(1 + \varphi_i^{(k)}\right)^2} Z_i^{(k)} \left[ Z_i^{(k)} \right]' \right|
-\end{align}
-\citeauthor{Dem04} gives some guidance on how to maximize this approximate likelihood in $\beta$ and $\Sigma$.
+This section is based on an in-progress paper contained in the source files for the \texttt{lme4} package \citep{Wal24}. The general idea is that we want to approximate the integral in (\ref{eq:fy_int}) using Laplace's method. In order to do so, we must compute the maximizer for $u$ in the joint likelihood $f_{Y,U}(y,u)$. Call this maximizer $\tilde{u}(\beta, \theta)$. We then plug $\tilde{u}$ into the Laplace approximation formula \citep[see, e.g., Section 7.7.1 of ][]{Dem04}, and maximize over $\beta$ and $\theta$.
 
-\section{The \texttt{glmer} Function in \texttt{lme4}}
-
-This section is based on an in-progress paper contained in the source files for the \texttt{lme4} package \citep{Wal24}. The general idea is that we want to approximate the integral in (\ref{eq:fy_int}) using Laplace's method. In order to do so, we must compute the maximizer for $u$ in the joint likelihood $f_{Y,U}(y,u)$. Call this maximizer $\tilde{u}(\beta, \theta)$. We then plug $\tilde{u}$ into the Laplace approximation formula, (\ref{eq:lap_form}), and maximize over $\beta$ and $\theta$. Much attention is paid to the problem of computing $\tilde{u}$, while little is said about how to optimize the Laplace approximation. While the former certainly requires care, the latter problem seems more challenging to me. In particular, the proposed method for computing $\tilde{u}$ is an iterative algorithm, so optimizing the resulting Laplace approximation requires nested iteration. Clearly, \citeauthor{Wal24} have a working implementation of this nested optimization; I would just prefer that they spend more time here in their exposition. Maybe the published version of the paper will spend more time here.
-
-Anyway, on to what they actually did.
+We now go into more detail on the various steps.
 
 \subsection{PIRLS}
 \label{sec:PIRLS}
